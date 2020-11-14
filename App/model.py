@@ -53,17 +53,18 @@ def newCitibike():
                'components': None,
                }
     
-    citibike['stations'] = m.newMap(numelements=14000,
+    citibike['stations'] = m.newMap(numelements=101, #14000
                                      maptype='PROBING',
                                      comparefunction=compareStations)
     
     citibike['connections'] = gr.newGraph(datastructure='ADJ_LIST',
                                         directed=True,
-                                        size=1000,
+                                        size=50,#1000
                                         comparefunction=compareStations)
+    return citibike
 
 
-def addSationConnection(citibike, laststation, station):
+def addStationConnection(citibike, laststation, station):
     origin = formatVertex(laststation)
     destination = formatVertex(station)
     cleanServiceDuration(laststation, station)
@@ -81,7 +82,7 @@ def addRouteStation(citibike, station):
     if entry is None:
         lstroutes = lt.newList(cmpfunction=compareroutes)
         lt.addLast(lstroutes, station['start station id'])
-        m.put(citibike['stations'], citibike['end station id'], lstroutes)
+        m.put(citibike['stations'], station['end station id'], lstroutes)
     else:
         lstroutes = entry['value']
         info = station['start station id']
@@ -155,8 +156,8 @@ def numSCC(citibike):
     citibike['components'] = scc.KosarajuSCC(citibike['connections'])
     return scc.connectedComponents(citibike['components'])
 
-def sameCC(citibike, satation1, station2):
-    return scc.stronglyConnected(ciitbike, satation1, station2)
+def sameSCC(citibike, station1, station2):
+    return scc.stronglyConnected(citibike, station1, station2)
 
 # ==============================
 # Funciones Helper

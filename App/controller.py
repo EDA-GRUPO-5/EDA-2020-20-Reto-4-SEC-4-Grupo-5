@@ -71,9 +71,9 @@ def loadFile(citibike, tripfile):
             samestation = laststation['start station id'] == station['start station id']
             samedirection = laststation['end station id'] == station['end station id']
             if samestation and samedirection:
-                model.addSationConnection(citibike, laststation, station)
+                model.addStationConnection(citibike, laststation, station)
         laststation = station
-    model.addRouteConnections(citibike)
+    model.addRoutConnections(citibike)
     return citibike
 
 # ___________________________________________________

@@ -47,8 +47,9 @@ file1 = '201801-1-citibike-tripdata.csv'
 file2 = '201801-2-citibike-tripdata.csv'
 file3 = '201801-3-citibike-tripdata.csv'
 file4 = '201801-4-citibike-tripdata.csv'
-filename = file1
-recursionLimit = 20000
+file5 = '201801-1-citibike-tripdata-small.csv'
+filename = file5
+recursionLimit = 80000
 
 # ___________________________________________________
 #  Menu principal
