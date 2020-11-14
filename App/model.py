@@ -38,9 +38,9 @@ En este archivo definimos los TADs que vamos a usar y las operaciones
 de creacion y consulta sobre las estructuras de datos.
 """
 
-# -----------------------------------------------------
+# =====================================================
 #                       API
-# -----------------------------------------------------
+# =====================================================
 
 # Funciones para agregar informacion al grafo
 
@@ -209,3 +209,7 @@ def compareroutes(route1, route2):
         return 1
     else:
         return -1
+
+# ==============================
+# Funciones de Requerimientos
+# ==============================
