@@ -113,18 +113,18 @@ def criticStations(citibike):
     Top 3 Llegada, Top 3 Salida y Top 3 menos usadas\n
     Req 3
     """
-    pass
+    return model.criticStations(citibike)
 
 def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longitudDestino):
     """
     Estacion mas cercana a la posicion actual, Estacion mas cercana al destino, (Menor) Tiempo estimado, Lista de estaciones para llegar al destino\n
     Req 6
     """
-    pass
+    return model.turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longitudDestino)
 
 def ageStations(citibike, team):
     """
     Lista de tuplas con las parejas Entrada, Salida y la cantidad de viajes\n
     Req 7
     """
-    pass
+    return model.ageStations(citibike, team)

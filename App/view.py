@@ -49,7 +49,7 @@ file2 = '201801-2-citibike-tripdata.csv'
 file3 = '201801-3-citibike-tripdata.csv'
 file4 = '201801-4-citibike-tripdata.csv'
 file5 = '201801-1-citibike-tripdata-small.csv'
-filename = file5
+filename = file1
 recursionLimit = 80000
 
 # ___________________________________________________
@@ -90,8 +90,8 @@ def optionThree():
     """
     Req 1
     """
-    station1 = input("Ingrese la estación 1: ") 
-    station2 = input("Ingrese la estación 2: ")
+    station1 = input("Ingrese id de la estación 1: ") 
+    station2 = input("Ingrese id de la estación 2: ")
     print('El número de componentes conectados es: ' +
           str(controller.numSCC(citibike)))
     sameSCC = controller.sameSCC(citibike, station1, station2)
@@ -116,9 +116,9 @@ def optionFive():
     """
     llegada, salida, menosUsadas = controller.criticStations(citibike)
 
-    print(f'Las 3 estaciones en el TOP de llegada:<{lt.getElement(llegada,1)}>, <{lt.getElement(llegada,2)}>, <{lt.getElement(llegada,3)}>')
-    print(f'Las 3 estaciones en el TOP de salida:<{lt.getElement(salida,1)}>, <{lt.getElement(salida,2)}>, <{lt.getElement(salida,3)}>')
-    print(f'Las 3 estaciones en el TOP de menos usadas:<{lt.getElement(menosUsadas,1)}>, <{lt.getElement(menosUsadas,2)}>, <{lt.getElement(menosUsadas,3)}>')
+    print(f'Las 3 estaciones en el TOP de llegada: <{lt.getElement(llegada,1)}>, <{lt.getElement(llegada,2)}>, <{lt.getElement(llegada,3)}>')
+    print(f'Las 3 estaciones en el TOP de salida: <{lt.getElement(salida,1)}>, <{lt.getElement(salida,2)}>, <{lt.getElement(salida,3)}>')
+    print(f'Las 3 estaciones en el TOP de menos usadas: <{lt.getElement(menosUsadas,1)}>, <{lt.getElement(menosUsadas,2)}>, <{lt.getElement(menosUsadas,3)}>')
 
 
 def optionSix():
@@ -138,18 +138,29 @@ def optionSeven():
 def optionEight():
     """
     Req 6P
-    """    
-    latAct = input('Latitud Actual\n')
-    lonAct = input('Longitud Actual\n')
-    latDes = input('Latitud Destino\n')
-    lonDes = input('Longitud Destino\n')
+    """
+    centi = True
+    while centi:
+        latAct = input('Latitud Actual\n')
+        lonAct = input('Longitud Actual\n')
+        latDes = input('Latitud Destino\n')
+        lonDes = input('Longitud Destino\n')
+        try:
+            latAct, lonAct, latDes, lonDes = float(latAct),float(lonAct),float(latDes),float(lonDes)
+        except ValueError:
+            print('Ingrese coordenadas validas')
+        else:
+            centi = False
 
     nearStationActual, nearStationDestiny, tripTime, stationList = controller.turistInteres(citibike, latAct, lonAct, latDes, lonDes)
 
-    print(f'La estacion mas cercana a su ubicacion actual es <{nearStationActual}>')
-    print(f'La estacion mas cercana a su ubicacion destino es <{nearStationDestiny}>')
-    print(f'El tiempo estimado de viaje es <{tripTime}>')
-    print(f'La lista de estaciones en la ruta es <{stationList}>')
+    print(f'La estacion mas cercana a su ubicacion actual es: <{nearStationActual}>')
+    print(f'La estacion mas cercana a su ubicacion destino es: <{nearStationDestiny}>')
+    print(f'El tiempo estimado de viaje es: <{tripTime}>')
+    print('La lista de estaciones en la ruta es:\n<')
+    for item in range(lt.size(stationList)):
+        print(f'\t{item+1}) {lt.getElement(stationList, item)}')
+    print('>')
 
 
 def optionNine():
@@ -164,12 +175,12 @@ def optionNine():
         inf = (temp*10)+1 if temp > 0 else 0
     team = f'{inf}-{sup}' if temp < 6 else f'{61}+'
     
-    stationsStartStopTrips = controller.ageStations(citibike, team)
+    stationsStartStopTrips = controller.ageStations(citibike, temp)
 
     print(f'En el rango de edad <{team}>:')
     for i in range(lt.size(stationsStartStopTrips)):
         info = lt.getElement(stationsStartStopTrips, i)
-        print(f'Entrada {info[0]}, Salida {info[1]}, Con {info[3]} viajes registrados')
+        print(f'{i+1}-> Entrada <{info[0]}>, Salida <{info[1]}>, Con {info[2]} viajes registrados')
 
 
 
