@@ -1,28 +1,3 @@
-"""
- * Copyright 2020, Departamento de sistemas y Computación
- * Universidad de Los Andes
- *
- *
- * Desarrolado para el curso ISIS1225 - Estructuras de Datos y Algoritmos
- *
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * Contribución de:
- *
- * Dario Correal
- *
- """
 from os import cpu_count
 import config
 from DISClib.ADT.graph import gr
@@ -47,7 +22,6 @@ de creacion y consulta sobre las estructuras de datos.
 # =====================================================
 
 # Funciones para agregar informacion al grafo
-
 
 def newCitibike():
 
@@ -278,7 +252,6 @@ def compareroutes(route1, route2):
 # Funciones de Requerimientos
 # ==============================
 
-
 def criticStations(citibike):
     """
     Top 3 Llegada, Top 3 Salida y Top 3 menos usadas
@@ -345,6 +318,24 @@ def criticStations(citibike):
 
     return topLlegada, topSalida, intopUsadas
 
+def rutaPorResistencia(citibike, tiempoMax, idEstacionInicial):
+    """
+    Rutas turisticas por resistencia
+    Req 4
+    """
+    ltKeys = gr.vertices(citibike['connections']) #Vertices
+    ltEdges = gr.edges(citibike['connections']) #Arcos
+    for i in range(1, lt.size(ltKeys)+1): 
+        station = lt.getElement(ltKeys, i) #Estacion incial a Estacion Final (id) -> str
+        stations = station.split("-") 
+        while str(idEstacionInicial) == stations[0]: #Identificar los que tienen el mismo idEstacionInicial
+            print(stations)
+            duracion = lt.getElement(ltEdges,i) #Obtener la duración (peso del arco)
+            duration = duracion['weight']/60 #Duracion (tripduration) en minutos
+            if duration <= tiempoMax:
+                return stations[0], stations[1], duration #Modificar para dar los nombres de la estacion y no los ids
+            else:
+                return 'No hay rutas turisticas menores al tiempo de resistencia'
 
 def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longitudDestino):
     """
@@ -373,6 +364,7 @@ def ageStations(citibike, team):
 #=-=-=-=-=-=-=-=-=-=-=-=
 #Funciones usadas
 #=-=-=-=-=-=-=-=-=-=-=-=
+
 def lessequal(k1,k2=None):
     if k2 == None:
         return True
