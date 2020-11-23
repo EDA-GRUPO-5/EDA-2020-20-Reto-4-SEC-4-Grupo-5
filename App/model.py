@@ -1,3 +1,28 @@
+"""
+ * Copyright 2020, Departamento de sistemas y Computación
+ * Universidad de Los Andes
+ *
+ *
+ * Desarrolado para el curso ISIS1225 - Estructuras de Datos y Algoritmos
+ *
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Contribución de:
+ *
+ * Dario Correal
+ *
+ """
 from os import cpu_count
 import config
 from DISClib.ADT.graph import gr
@@ -12,6 +37,7 @@ from DISClib.Algorithms.Sorting import mergesort as ms
 from DISClib.ADT import orderedmap as om
 from math import cos, asin, sqrt, pi
 assert config
+
 """
 En este archivo definimos los TADs que vamos a usar y las operaciones
 de creacion y consulta sobre las estructuras de datos.
@@ -23,36 +49,33 @@ de creacion y consulta sobre las estructuras de datos.
 
 # Funciones para agregar informacion al grafo
 
+
 def newCitibike():
 
     citibike = {
                'stations': None,
                'connections': None,
-               'components': None,
                'idName_stations': None,
-               'coordStation': None,
+               'components': None,
                }
     
     citibike['stations'] = m.newMap(numelements=1000,
                                     maptype='PROBING',
                                     comparefunction=compareStations)
     
-    citibike['connections'] = gr.newGraph(datastructure='ADJ_LIST',
-                                            directed=True,
-                                            size=1000,
-                                            comparefunction=compareStations)
-
     citibike['idName_stations'] = m.newMap(numelements=1000,
                                             comparefunction=compareStations)
-
-    #citibike['coordStation'] = m.newMap(numelements=1000,
-                                            #comparefunction=compareStations)
+    
+    citibike['connections'] = gr.newGraph(datastructure='ADJ_LIST',
+                                        directed=True,
+                                        size=1000,
+                                        comparefunction=compareStations)
     return citibike
 
 
 def addStationConnection(citibike, laststation, station):
-    origin = laststation['end station id']#formatVertex(laststation)
-    destination = station['start station id'] #formatVertex(station)
+    origin = formatVertex(laststation)
+    destination = formatVertex(station)
     cleanServiceDuration(laststation, station)
     duration = float(station['tripduration']) - float(laststation['tripduration'])
     addStation(citibike, origin)
@@ -61,13 +84,8 @@ def addStationConnection(citibike, laststation, station):
     addRouteStation(citibike, station)
     addRouteStation(citibike, laststation)
 
-    #Para el req 3
     addIdName(citibike, laststation)
     addIdName(citibike, station)
-
-    #Para el req 6
-    #addCoord(citibike, laststation)
-    #addCoord(citibike, station)
 
     return citibike
 
@@ -121,25 +139,16 @@ def addStation(citibike, stationid):
             gr.insertVertex(citibike['connections'], stationid)
     return citibike
 
-
 def addConnection(citibike, origin, destination, duration):
-    try:
-        edge = gr.getEdge(citibike['connections'], origin, destination)
 
-        if edge is None:
-            gr.addEdge(citibike['connections'], origin, destination, duration)
-    except:
-        print(origin)
-        print(destination)
-        print(duration)
+    edge = gr.getEdge(citibike['connections'], origin, destination)
+
+    if edge is None:
+        gr.addEdge(citibike['connections'], origin, destination, duration)
     
     return citibike
 
-
 def addIdName(citibike, station):
-    """
-    Para el req 3
-    """
     entry = citibike['idName_stations']
     stationStart = station['start station id']
     stationEnd = station['end station id']
@@ -155,21 +164,6 @@ def addIdName(citibike, station):
     
     return citibike
 
-
-def addCoord(citibike, station):
-    """
-    Para el req 6
-    """
-    entry = citibike['coordStation']
-    stationStart = str((station['start station latitude'], station['start station longitude']))
-    stationEnd = str((station['end station latitude'], station['end station longitude']))
-    if not om.contains(entry, stationStart):
-        om.put(entry, stationStart, station['start station id'])
-
-    if not om.contains(entry, stationEnd):
-        om.put(entry, stationEnd, station['end station id'])
-    return citibike
-
 # ==============================
 # Funciones de consulta
 # ==============================
@@ -180,19 +174,16 @@ def totalStations(citibike):
     """
     return gr.numVertices(citibike['connections'])
 
-
 def totalConnections(citibike):
     """
     Retorna el total arcos del grafo
     """
     return gr.numEdges(citibike['connections'])
 
-
 def numSCC(citibike):
 
     citibike['components'] = scc.KosarajuSCC(citibike['connections'])
     return scc.connectedComponents(citibike['components'])
-
 
 def sameSCC(citibike, station1, station2):
     return scc.stronglyConnected(citibike, station1, station2)
@@ -213,7 +204,7 @@ def cleanServiceDuration(laststation, station):
 
 def formatVertex(station):
     """
-    Se formatea el nombre del vertice con el id de la estación
+    Se formatea el nombrer del vertice con el id de la estación
     seguido de la ruta.
     """
     name = station['end station id'] + '-'
@@ -251,6 +242,7 @@ def compareroutes(route1, route2):
 # ==============================
 # Funciones de Requerimientos
 # ==============================
+
 
 def criticStations(citibike):
     """
@@ -318,24 +310,7 @@ def criticStations(citibike):
 
     return topLlegada, topSalida, intopUsadas
 
-def rutaPorResistencia(citibike, tiempoMax, idEstacionInicial):
-    """
-    Rutas turisticas por resistencia
-    Req 4
-    """
-    ltKeys = gr.vertices(citibike['connections']) #Vertices
-    ltEdges = gr.edges(citibike['connections']) #Arcos
-    for i in range(1, lt.size(ltKeys)+1): 
-        station = lt.getElement(ltKeys, i) #Estacion incial a Estacion Final (id) -> str
-        stations = station.split("-") 
-        while str(idEstacionInicial) == stations[0]: #Identificar los que tienen el mismo idEstacionInicial
-            print(stations)
-            duracion = lt.getElement(ltEdges,i) #Obtener la duración (peso del arco)
-            duration = duracion['weight']/60 #Duracion (tripduration) en minutos
-            if duration <= tiempoMax:
-                return stations[0], stations[1], duration #Modificar para dar los nombres de la estacion y no los ids
-            else:
-                return 'No hay rutas turisticas menores al tiempo de resistencia'
+
 
 def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longitudDestino):
     """
@@ -364,7 +339,6 @@ def ageStations(citibike, team):
 #=-=-=-=-=-=-=-=-=-=-=-=
 #Funciones usadas
 #=-=-=-=-=-=-=-=-=-=-=-=
-
 def lessequal(k1,k2=None):
     if k2 == None:
         return True
