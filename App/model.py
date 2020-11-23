@@ -74,8 +74,8 @@ def newCitibike():
 
 
 def addStationConnection(citibike, laststation, station):
-    origin = formatVertex(laststation)
-    destination = formatVertex(station)
+    origin = formatVertex2(laststation)
+    destination = formatVertex1(station)
     cleanServiceDuration(laststation, station)
     duration = float(station['tripduration']) - float(laststation['tripduration'])
     addStation(citibike, origin)
@@ -86,7 +86,7 @@ def addStationConnection(citibike, laststation, station):
 
     addIdName(citibike, laststation)
     addIdName(citibike, station)
-
+    print(gr.vertices(citibike['connections']))
     return citibike
 
 
@@ -202,14 +202,11 @@ def cleanServiceDuration(laststation, station):
     if laststation['tripduration'] == '':
         laststation['tripduration'] = 0
 
-def formatVertex(station):
-    """
-    Se formatea el nombrer del vertice con el id de la estación
-    seguido de la ruta.
-    """
-    name = station['end station id'] + '-'
-    name = name + station['start station id']
-    return name
+def formatVertex1(station):
+    return station['end station id']
+
+def formatVertex2(station):
+    return station['start station id']
 
 # ==============================
 # Funciones de Comparacion
