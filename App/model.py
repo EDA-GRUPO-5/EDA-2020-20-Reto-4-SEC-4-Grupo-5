@@ -34,8 +34,9 @@ from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
 
 from DISClib.Algorithms.Sorting import mergesort as ms
+from DISClib.ADT import orderedmap as om
+from math import cos, asin, sqrt, pi
 assert config
-
 """
 En este archivo definimos los TADs que vamos a usar y las operaciones
 de creacion y consulta sobre las estructuras de datos.
@@ -53,27 +54,31 @@ def newCitibike():
     citibike = {
                'stations': None,
                'connections': None,
-               'idName_stations': None,
                'components': None,
+               'idName_stations': None,
+               'coordStation': None,
                }
     
     citibike['stations'] = m.newMap(numelements=1000,
                                     maptype='PROBING',
                                     comparefunction=compareStations)
     
+    citibike['connections'] = gr.newGraph(datastructure='ADJ_LIST',
+                                            directed=True,
+                                            size=1000,
+                                            comparefunction=compareStations)
+
     citibike['idName_stations'] = m.newMap(numelements=1000,
                                             comparefunction=compareStations)
-    
-    citibike['connections'] = gr.newGraph(datastructure='ADJ_LIST',
-                                        directed=True,
-                                        size=1000,
-                                        comparefunction=compareStations)
+
+    #citibike['coordStation'] = m.newMap(numelements=1000,
+                                            #comparefunction=compareStations)
     return citibike
 
 
 def addStationConnection(citibike, laststation, station):
-    origin = formatVertex(laststation)
-    destination = formatVertex(station)
+    origin = laststation['end station id']#formatVertex(laststation)
+    destination = station['start station id'] #formatVertex(station)
     cleanServiceDuration(laststation, station)
     duration = float(station['tripduration']) - float(laststation['tripduration'])
     addStation(citibike, origin)
@@ -82,8 +87,13 @@ def addStationConnection(citibike, laststation, station):
     addRouteStation(citibike, station)
     addRouteStation(citibike, laststation)
 
+    #Para el req 3
     addIdName(citibike, laststation)
     addIdName(citibike, station)
+
+    #Para el req 6
+    #addCoord(citibike, laststation)
+    #addCoord(citibike, station)
 
     return citibike
 
@@ -137,16 +147,25 @@ def addStation(citibike, stationid):
             gr.insertVertex(citibike['connections'], stationid)
     return citibike
 
+
 def addConnection(citibike, origin, destination, duration):
+    try:
+        edge = gr.getEdge(citibike['connections'], origin, destination)
 
-    edge = gr.getEdge(citibike['connections'], origin, destination)
-
-    if edge is None:
-        gr.addEdge(citibike['connections'], origin, destination, duration)
+        if edge is None:
+            gr.addEdge(citibike['connections'], origin, destination, duration)
+    except:
+        print(origin)
+        print(destination)
+        print(duration)
     
     return citibike
 
+
 def addIdName(citibike, station):
+    """
+    Para el req 3
+    """
     entry = citibike['idName_stations']
     stationStart = station['start station id']
     stationEnd = station['end station id']
@@ -162,6 +181,21 @@ def addIdName(citibike, station):
     
     return citibike
 
+
+def addCoord(citibike, station):
+    """
+    Para el req 6
+    """
+    entry = citibike['coordStation']
+    stationStart = str((station['start station latitude'], station['start station longitude']))
+    stationEnd = str((station['end station latitude'], station['end station longitude']))
+    if not om.contains(entry, stationStart):
+        om.put(entry, stationStart, station['start station id'])
+
+    if not om.contains(entry, stationEnd):
+        om.put(entry, stationEnd, station['end station id'])
+    return citibike
+
 # ==============================
 # Funciones de consulta
 # ==============================
@@ -172,16 +206,19 @@ def totalStations(citibike):
     """
     return gr.numVertices(citibike['connections'])
 
+
 def totalConnections(citibike):
     """
     Retorna el total arcos del grafo
     """
     return gr.numEdges(citibike['connections'])
 
+
 def numSCC(citibike):
 
     citibike['components'] = scc.KosarajuSCC(citibike['connections'])
     return scc.connectedComponents(citibike['components'])
+
 
 def sameSCC(citibike, station1, station2):
     return scc.stronglyConnected(citibike, station1, station2)
@@ -202,7 +239,7 @@ def cleanServiceDuration(laststation, station):
 
 def formatVertex(station):
     """
-    Se formatea el nombrer del vertice con el id de la estación
+    Se formatea el nombre del vertice con el id de la estación
     seguido de la ruta.
     """
     name = station['end station id'] + '-'
@@ -309,7 +346,6 @@ def criticStations(citibike):
     return topLlegada, topSalida, intopUsadas
 
 
-
 def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longitudDestino):
     """
     Estacion mas cercana a la posicion actual, Estacion mas cercana al destino, (Menor) Tiempo estimado, Lista de estaciones para llegar al destino
@@ -356,3 +392,10 @@ def getStation(citibike, idStation, e_s_a=0):
         keyValue = m.get(citibike['idName_stations'], idStation[e_s_a])
         return (keyValue['key'], keyValue['value'])
     return None, None
+
+#Harvesine Formula
+#Nota: tarda menos que importar harvesine (por 0.02 ms)
+def distance(lat1, lon1, lat2, lon2):
+    p = pi/180
+    a = 0.5 - cos((lat2-lat1)*p)/2 + cos(lat1*p)*cos(lat2*p) * (1-cos((lon2-lon1)*p)) / 2
+    return 12742 * asin(sqrt(a)) #2*radio*asin(...)
