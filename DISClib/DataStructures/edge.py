@@ -32,13 +32,15 @@ Este código está basado en las implementaciones propuestas en:
 """
 
 
-def newEdge(va, vb, weight=0):
+def newEdge(va, vb, weight=0, count=1):
     """
     Crea un nuevo arco entrelos vertices va y vb
     """
-    edge = {'vertexA': va,
+    edge = {
+            'vertexA': va,
             'vertexB': vb,
-            'weight': weight
+            'weight': weight,
+            'count': count
             }
     return edge
 
@@ -75,3 +77,17 @@ def compareedges(edge1, edge2):
         if other(edge1, e1v) == other(edge2, e2v):
             return True
     return False
+
+
+def count(edge):
+    """
+    Retorna el peso de un arco
+    """
+    return edge['count']
+
+def addEdgeCount(edge):
+    """
+    Aumenta el count en 1
+    """
+    edge['count'] +=1
+    return edge

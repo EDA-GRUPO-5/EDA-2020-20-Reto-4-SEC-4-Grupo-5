@@ -86,7 +86,6 @@ def addStationConnection(citibike, laststation, station):
 
     addIdName(citibike, laststation)
     addIdName(citibike, station)
-    print(gr.vertices(citibike['connections']))
     return citibike
 
 
@@ -145,6 +144,8 @@ def addConnection(citibike, origin, destination, duration):
 
     if edge is None:
         gr.addEdge(citibike['connections'], origin, destination, duration)
+    else:
+        gr.addEdgeCount(citibike['connections'], edge)
     
     return citibike
 
