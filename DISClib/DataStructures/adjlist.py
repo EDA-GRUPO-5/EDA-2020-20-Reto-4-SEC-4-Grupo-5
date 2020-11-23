@@ -378,5 +378,5 @@ def adjacentEdges(graph, vertex):
 
 
 #=-=-=-=-=-=-=-=-=-=-=-=-
-def addEdgeCount(graph, edge):
+def addEdgeCount(edge):
     return e.addEdgeCount(edge)
