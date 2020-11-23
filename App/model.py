@@ -139,7 +139,9 @@ def addStation(citibike, stationid):
     return citibike
 
 def addConnection(citibike, origin, destination, duration):
-
+    if '-' in origin: print(origin)
+    if '-' in destination: print(destination)
+    
     edge = gr.getEdge(citibike['connections'], origin, destination)
 
     if edge is None:
