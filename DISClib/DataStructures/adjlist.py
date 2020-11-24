@@ -379,4 +379,13 @@ def adjacentEdges(graph, vertex):
 
 #=-=-=-=-=-=-=-=-=-=-=-=-
 def addEdgeCount(edge):
-    return e.addEdgeCount(edge)
+    try:
+        return e.addEdgeCount(edge)
+    except Exception as exp:
+        error.reraise(exp, 'ajlist:addEdgeCount')
+
+def edgeCount(edge):
+    try:
+        return e.count(edge)
+    except Exception as exp:
+        error.reraise(exp, 'ajlist:countEdge')

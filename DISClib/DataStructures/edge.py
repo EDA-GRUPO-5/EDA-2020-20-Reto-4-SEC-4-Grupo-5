@@ -81,7 +81,7 @@ def compareedges(edge1, edge2):
 
 def count(edge):
     """
-    Retorna el peso de un arco
+    Retorna el count de un arco
     """
     return edge['count']
 

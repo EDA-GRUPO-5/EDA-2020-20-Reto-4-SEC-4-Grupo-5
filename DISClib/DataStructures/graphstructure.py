@@ -298,3 +298,7 @@ def adjacentEdges(graph, vertex):
 def addEdgeCount(graph, edge):
     if (graph['type'] == "ADJ_LIST"):
         return alt.addEdgeCount(edge)
+
+def edgeCount(graph, edge):
+    if (graph['type'] == "ADJ_LIST"):
+        return alt.edgeCount(edge)

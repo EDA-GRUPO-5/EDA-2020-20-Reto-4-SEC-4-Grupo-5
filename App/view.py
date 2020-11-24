@@ -15,7 +15,7 @@ file2 = '201801-2-citibike-tripdata.csv'
 file3 = '201801-3-citibike-tripdata.csv'
 file4 = '201801-4-citibike-tripdata.csv'
 file5 = '201801-1-citibike-tripdata-small.csv'
-filename = file2
+filename = file1
 recursionLimit = 80000
 
 # ___________________________________________________
@@ -79,9 +79,9 @@ def optionFive():
     """
     llegada, salida, menosUsadas = controller.criticStations(citibike)
 
-    print(f'Las 3 estaciones en el TOP de llegada: <{lt.getElement(llegada,1)}>, <{lt.getElement(llegada,2)}>, <{lt.getElement(llegada,3)}>')
-    print(f'Las 3 estaciones en el TOP de salida: <{lt.getElement(salida,1)}>, <{lt.getElement(salida,2)}>, <{lt.getElement(salida,3)}>')
-    print(f'Las 3 estaciones en el TOP de menos usadas: <{lt.getElement(menosUsadas,1)}>, <{lt.getElement(menosUsadas,2)}>, <{lt.getElement(menosUsadas,3)}>')
+    #print(f'Las 3 estaciones en el TOP de llegada: <{lt.getElement(llegada,1)}>, <{lt.getElement(llegada,2)}>, <{lt.getElement(llegada,3)}>')
+    #print(f'Las 3 estaciones en el TOP de salida: <{lt.getElement(salida,1)}>, <{lt.getElement(salida,2)}>, <{lt.getElement(salida,3)}>')
+    #print(f'Las 3 estaciones en el TOP de menos usadas: <{lt.getElement(menosUsadas,1)}>, <{lt.getElement(menosUsadas,2)}>, <{lt.getElement(menosUsadas,3)}>')
 
 def optionSix():
     """

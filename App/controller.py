@@ -33,13 +33,14 @@ def loadFile(citibike, tripfile):
                                 delimiter=",")
     laststation = None
     for station in input_file:
-        if laststation is not None:
-            samestation = laststation['start station id'] == station['start station id']
-            samedirection = laststation['end station id'] == station['end station id']
-            if samestation and samedirection:
-                model.addStationConnection(citibike, laststation, station)
-        laststation = station
-    model.addRoutConnections(citibike)
+        model.addStationRoute(citibike, station)
+        #if laststation is not None:
+            #samestation = laststation['start station id'] == station['start station id']
+            #samedirection = laststation['end station id'] == station['end station id']
+            #if samestation and samedirection:
+                #model.addStopConnection(citibike, laststation, station)
+        #laststation = station
+    #model.addRouteStation(citibike)
     return citibike
 
 # ___________________________________________________

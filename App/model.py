@@ -57,125 +57,109 @@ def newCitibike():
                'connections': None,
                'idName_stations': None,
                'components': None,
+               'coords': None#,
+               #'triptime': None
                }
     
     citibike['stations'] = m.newMap(numelements=1000,
                                     maptype='PROBING',
                                     comparefunction=compareStations)
     
-    citibike['idName_stations'] = m.newMap(numelements=1000,
+    citibike['name_IDstations'] = m.newMap(numelements=1000,
                                             comparefunction=compareStations)
     
     citibike['connections'] = gr.newGraph(datastructure='ADJ_LIST',
                                         directed=True,
                                         size=1000,
                                         comparefunction=compareStations)
-    return citibike
 
+    citibike['coords'] = om.newMap(omaptype='BST',
+                                    comparefunction=compareStations)
 
-def addStationConnection(citibike, laststation, station):
-    origin = formatVertex2(laststation)
-    destination = formatVertex1(station)
-    cleanServiceDuration(laststation, station)
-    duration = float(station['tripduration']) - float(laststation['tripduration'])
-    addStation(citibike, origin)
-    addStation(citibike, destination)
-    addConnection(citibike, origin, destination, duration)
-    addRouteStation(citibike, station)
-    addRouteStation(citibike, laststation)
-
-    addIdName(citibike, laststation)
-    addIdName(citibike, station)
-    return citibike
-
-
-def addRouteStation(citibike, station):
-    entry = m.get(citibike['stations'], station['end station id'])
-    if entry is None:
-        lstroutes = lt.newList(cmpfunction=compareroutes)
-        lt.addLast(lstroutes, station['start station id'])
-        m.put(citibike['stations'], station['end station id'], lstroutes)
-    else:
-        lstroutes = entry['value']
-        info = station['start station id']
-        if not lt.isPresent(lstroutes, info):
-            lt.addLast(lstroutes, info)
-    return citibike
-
-
-def addRoutConnections(citibike):
-    lststations = m.keySet(citibike['stations'])
-    stationsiterator = it.newIterator(lststations)
-    while it.hasNext(stationsiterator):
-        key = it.next(stationsiterator)
-        lstroutes = m.get(citibike['stations'], key)['value']
-        prevrout = None
-        routeiterator = it.newIterator(lstroutes)
-        while it.hasNext(routeiterator):
-            route = key + '-' + it.next(routeiterator)
-            if prevrout is not None:
-                addConnection(citibike, prevrout, route, 0)
-                addConnection(citibike, route, prevrout, 0)
-            prevrout = route
-
-
-def addTrip(citibike, trip):
-
-    origin = trip['start station id']
-    destination =  trip['end station id']
-    duration = int(trip['tripduration'])
     
-    addStation(citibike, origin)
-    addStation(citibike, destination)
-    addConnection(citibike, origin, destination, duration)
-
     return citibike
 
 
-def addStation(citibike, stationid):
-    
-    if not gr.containsVertex(citibike['connections'], stationid):
-            gr.insertVertex(citibike['connections'], stationid)
+def addStationRoute(citibike, trip):
+    start = trip['start station id']
+    end = trip['end station id']
+    duration = float(trip['tripduration'])
+
+    addStation(citibike, start); addStation(citibike, end)
+    addRoute(citibike, start, end, duration)
+
+    #addTime(citibike, trip)
+
+    #Req 3
+    addStationName(citibike, trip)
+
+    #Req 6
+    #addStationCoords(citibike, trip)
     return citibike
 
-def addConnection(citibike, origin, destination, duration):
-    if '-' in origin: print(origin)
-    if '-' in destination: print(destination)
-    
-    edge = gr.getEdge(citibike['connections'], origin, destination)
 
+# ==============================
+# Funciones de Load
+# ==============================
+
+def addStation(citibike, station):
+
+    if not gr.containsVertex(citibike['connections'], station):
+        gr.insertVertex(citibike['connections'], station)
+
+    return citibike
+
+def addRoute(citibike, start, end, duration):
+
+    edge = gr.getEdge(citibike['connections'], start, end)
+    
     if edge is None:
-        gr.addEdge(citibike['connections'], origin, destination, duration)
+        gr.addEdge(citibike['connections'], start, end, duration)
+
     else:
         gr.addEdgeCount(citibike['connections'], edge)
-    
-    return citibike
+        #gr.promediateWeight(citibike['connections'], edge)
 
-def addIdName(citibike, station):
-    entry = citibike['idName_stations']
+"""def addTime(citibike, trip):
+    mapTrip = m.get(citibike['triptime'], trip['start station name'])
+    if mapTrip is None:
+        m.put(citibike['triptime'], trip['start station name'], trip['tripduration'])
+    return citibike"""
+
+def addStationName(citibike, station):
+    """
+    Para el req 3
+    """
+    entry = citibike['name_IDstations']
     stationStart = station['start station id']
     stationEnd = station['end station id']
     if not m.contains(entry, stationStart):
-            m.put(citibike['idName_stations'], stationStart, station['start station name'])
+            m.put(citibike['name_IDstations'], stationStart, station['start station name'])
     else:
-        m.put(citibike['idName_stations'], stationEnd, station['end station name'])
+        m.put(citibike['name_IDstations'], stationEnd, station['end station name'])
         
     if not m.contains(entry, stationEnd):
-            m.put(citibike['idName_stations'], stationEnd, station['end station name'])
+            m.put(citibike['name_IDstations'], stationEnd, station['end station name'])
     else:
-        m.put(citibike['idName_stations'], stationStart, station['start station name'])
+        m.put(citibike['name_IDstations'], stationStart, station['start station name'])
     
     return citibike
+    
 
-# ==============================
-# Funciones de consulta
-# ==============================
+def addStationCoords(citibike, trip):
+    """
+    Para el req 6
+    """
+    entry = citibike['coordStation']
+    stationStart = str((trip['start station latitude'], trip['start station longitude']))
+    stationEnd = str((trip['end station latitude'], trip['end station longitude']))
+    if not om.contains(entry, stationStart):
+        om.put(entry, stationStart, trip['start station id'])
 
-def totalStations(citibike):
-    """
-    Retorna el total de estaciones (vertices) del grafo
-    """
-    return gr.numVertices(citibike['connections'])
+    if not om.contains(entry, stationEnd):
+        om.put(entry, stationEnd, trip['end station id'])
+    return citibike
+
 
 def totalConnections(citibike):
     """
@@ -183,33 +167,11 @@ def totalConnections(citibike):
     """
     return gr.numEdges(citibike['connections'])
 
-def numSCC(citibike):
-
-    citibike['components'] = scc.KosarajuSCC(citibike['connections'])
-    return scc.connectedComponents(citibike['components'])
-
-def sameSCC(citibike, station1, station2):
-    return scc.stronglyConnected(citibike, station1, station2)
-
-# ==============================
-# Funciones Helper
-# ==============================
-
-def cleanServiceDuration(laststation, station):
+def totalStations(citibike):
     """
-    En caso de que el archivo tenga un espacio en la
-    distancia, se reemplaza con cero.
+    Retorna el total de estaciones (vertices) del grafo
     """
-    if station['tripduration'] == '':
-        station['tripduration'] = 0
-    if laststation['tripduration'] == '':
-        laststation['tripduration'] = 0
-
-def formatVertex1(station):
-    return station['end station id']
-
-def formatVertex2(station):
-    return station['start station id']
+    return gr.numVertices(citibike['connections'])
 
 # ==============================
 # Funciones de Comparacion
@@ -257,19 +219,14 @@ def criticStations(citibike):
     countLlegada = lt.newList(datastructure='ARRAY_LIST')
     countSalida = lt.newList(datastructure='ARRAY_LIST')
     incountUsadas = lt.newList(datastructure='ARRAY_LIST')
+    total = 0
+    ltKeys = gr.edges(citibike['connections'])
+    for arc in range(1, lt.size(ltKeys)+1):
+        arcVx = lt.getElement(ltKeys, arc)
+        total += gr.edgeCount(citibike['connections'], arcVx)
 
-    ltKeys = gr.vertices(citibike['connections'])
-    for st in range(1, lt.size(ltKeys)+1):
-        stationVx = lt.getElement(ltKeys, st)
-        inVx = gr.indegree(citibike['connections'], stationVx)
-        outVx = gr.outdegree(citibike['connections'], stationVx)
-        deVx = gr.degree(citibike['connections'], stationVx)
-
-        lt.addLast(countLlegada, inVx)
-        lt.addLast(countSalida, outVx)
-        lt.addLast(incountUsadas, deVx)
-
-    top3L = lt.newList(datastructure='ARRAY_LIST', cmpfunction=compareroutes)
+    print(total)
+    """top3L = lt.newList(datastructure='ARRAY_LIST', cmpfunction=compareroutes)
     top3S = lt.newList(datastructure='ARRAY_LIST', cmpfunction=compareroutes)
     inTop3 = lt.newList(datastructure='ARRAY_LIST', cmpfunction=compareroutes)
 
@@ -306,9 +263,9 @@ def criticStations(citibike):
         if lt.isPresent(inTop3, gr.degree(citibike['connections'], stationVxi)):
             stationNameI = getStation(citibike, stationVxi, 2)
             lt.addLast(intopUsadas, stationNameI[1])
-        Vxi += 1
-
-    return topLlegada, topSalida, intopUsadas
+        Vxi += 1"""
+    return None, None, None
+    #return topLlegada, topSalida, intopUsadas
 
 
 
