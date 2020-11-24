@@ -74,7 +74,7 @@ def newCitibike():
                                         comparefunction=compareStations)
 
     citibike['coords'] = om.newMap(omaptype='BST',
-                                    comparefunction=compareStations)
+                                    comparefunction=compareroutes)
 
     
     return citibike
@@ -94,7 +94,7 @@ def addStationRoute(citibike, trip):
     addStationName(citibike, trip)
 
     #Req 6
-    #addStationCoords(citibike, trip)
+    addStationCoords(citibike, trip)
     return citibike
 
 
@@ -150,14 +150,14 @@ def addStationCoords(citibike, trip):
     """
     Para el req 6
     """
-    entry = citibike['coordStation']
-    stationStart = str((trip['start station latitude'], trip['start station longitude']))
-    stationEnd = str((trip['end station latitude'], trip['end station longitude']))
-    if not om.contains(entry, stationStart):
-        om.put(entry, stationStart, trip['start station id'])
+    entry = citibike['coords']
+    stationStart = (trip['start station latitude'], trip['start station longitude'])
+    stationEnd = (trip['end station latitude'], trip['end station longitude'])
+    if not om.contains(entry, int(trip['start station id'])):
+        om.put(entry, int(trip['start station id']),stationStart)
 
-    if not om.contains(entry, stationEnd):
-        om.put(entry, stationEnd, trip['end station id'])
+    if not om.contains(entry, int(trip['end station id'])):
+        om.put(entry, int(trip['end station id']), stationEnd)
     return citibike
 
 
@@ -211,62 +211,50 @@ def criticStations(citibike):
     Top 3 Llegada, Top 3 Salida y Top 3 menos usadas
     """
     #Listas respuesta
-    topLlegada = lt.newList(datastructure='ARRAY_LIST')
-    topSalida = lt.newList(datastructure='ARRAY_LIST')
-    intopUsadas = lt.newList(datastructure='ARRAY_LIST')
+    topLlegada = lt.newList(datastructure='ARRAY_LIST', cmpfunction=compareroutes)
+    topSalida = lt.newList(datastructure='ARRAY_LIST', cmpfunction=compareroutes)
+    intopUsadas = lt.newList(datastructure='ARRAY_LIST', cmpfunction=compareroutes)
 
     #Listas temporales para obtener el top 3
-    countLlegada = lt.newList(datastructure='ARRAY_LIST')
-    countSalida = lt.newList(datastructure='ARRAY_LIST')
-    incountUsadas = lt.newList(datastructure='ARRAY_LIST')
-    total = 0
-    ltKeys = gr.edges(citibike['connections'])
-    for arc in range(1, lt.size(ltKeys)+1):
-        arcVx = lt.getElement(ltKeys, arc)
-        total += gr.edgeCount(citibike['connections'], arcVx)
-
-    print(total)
-    """top3L = lt.newList(datastructure='ARRAY_LIST', cmpfunction=compareroutes)
-    top3S = lt.newList(datastructure='ARRAY_LIST', cmpfunction=compareroutes)
+    top3LS = lt.newList(datastructure='ARRAY_LIST', cmpfunction=compareroutes)
     inTop3 = lt.newList(datastructure='ARRAY_LIST', cmpfunction=compareroutes)
 
-    #Ordenar las 3 listas para despues obtener los 3 valores que esten en el top
-    ms.mergesort(countLlegada, greatequal)
-    ms.mergesort(countSalida, greatequal)
-    ms.mergesort(incountUsadas, lessequal)
+    tempLT = lt.newList(cmpfunction=compareroutes)
+    ltKeys = gr.edges(citibike['connections'])
+    for arc in range(1, lt.size(ltKeys)+1):
+        lt.addLast(tempLT, lt.getElement(ltKeys, arc)['count'])
+
+
+    ms.mergesort(tempLT, greatequal)
 
     for i in range(1,4):
-        lt.addLast(top3L, lt.getElement(countLlegada, i))
-        lt.addLast(top3S, lt.getElement(countSalida, i))
-        lt.addLast(inTop3, lt.getElement(incountUsadas, i))
+        lt.addLast(top3LS, lt.getElement(tempLT, i))
+    for i in range(3):
+        lt.addLast(inTop3, lt.getElement(tempLT, lt.size(tempLT)-i))
 
+    vxl = 1
+    while vxl <= lt.size(tempLT) and lt.size(topLlegada) <= 3:
+        if lt.isPresent(top3LS, lt.getElement(ltKeys, vxl)['count']):
+            vxA = getStation(citibike, lt.getElement(ltKeys, vxl)['vertexA'])[1]
+            lt.addLast(topLlegada, vxA)
+        vxl +=1
 
-    Vxl = 1
-    while lt.size(topLlegada) < 3 and Vxl <= lt.size(ltKeys):
-        stationVxl = lt.getElement(ltKeys, Vxl)
-        if lt.isPresent(top3L, gr.indegree(citibike['connections'], stationVxl)):
-            stationNameL = getStation(citibike, stationVxl, 0)
-            lt.addLast(topLlegada, stationNameL[1])
-        Vxl += 1
+    vxs = 1
+    while vxs <= lt.size(tempLT) and lt.size(topSalida) <= 3:
+        if lt.isPresent(top3LS, lt.getElement(ltKeys, vxs)['count']):
+            vxB = getStation(citibike, lt.getElement(ltKeys, vxs)['vertexB'])[1]
+            lt.addLast(topSalida, vxB)
+        vxs +=1
 
-    Vxs = 1
-    while lt.size(topSalida) < 3 and Vxs <= lt.size(ltKeys):
-        stationVxs = lt.getElement(ltKeys, Vxs)
-        if lt.isPresent(top3S, gr.outdegree(citibike['connections'], stationVxs)):
-            stationNameS = getStation(citibike, stationVxs, 1)
-            lt.addLast(topSalida, stationNameS[1])
-        Vxs += 1
+    vxin = 1
+    while vxin <= lt.size(tempLT) and lt.size(intopUsadas) <= 3:
+        if lt.isPresent(inTop3, lt.getElement(ltKeys, vxin)['count']):
+            vxA =  getStation(citibike, lt.getElement(ltKeys, vxin)['vertexA'])[1]
+            if not lt.isPresent(intopUsadas, vxA):
+                lt.addLast(intopUsadas, vxA)
+        vxin +=1
 
-    Vxi = 1
-    while lt.size(intopUsadas) < 3 and Vxi <= lt.size(ltKeys):
-        stationVxi = lt.getElement(ltKeys, Vxi)
-        if lt.isPresent(inTop3, gr.degree(citibike['connections'], stationVxi)):
-            stationNameI = getStation(citibike, stationVxi, 2)
-            lt.addLast(intopUsadas, stationNameI[1])
-        Vxi += 1"""
-    return None, None, None
-    #return topLlegada, topSalida, intopUsadas
-
+    return topLlegada, topSalida, intopUsadas
 
 
 def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longitudDestino):
@@ -304,15 +292,13 @@ def lessequal(k1,k2=None):
 def greatequal(k1,k2=None):
     return not(lessequal(k1,k2))
 
-def getStation(citibike, idStation, e_s_a=0):
+def getStation(citibike, idStation):
     """
     Args:\n
-    citibike: El archivo en total; idStation el vertice <end station id>-<start station id>; e_s_a: end = 0, start = 1, any = 2 o mas para obtener el vertice buscado
+    citibike: El archivo en total; idStation el vertice <end station id>-<start station id>
     """
-    idStation = idStation.split('-')
-    e_s_a = e_s_a if e_s_a < 2 else 0
-    if m.contains(citibike['idName_stations'], idStation[e_s_a]):
-        keyValue = m.get(citibike['idName_stations'], idStation[e_s_a])
+    if m.contains(citibike['name_IDstations'], idStation):
+        keyValue = m.get(citibike['name_IDstations'], idStation)
         return (keyValue['key'], keyValue['value'])
     return None, None
 

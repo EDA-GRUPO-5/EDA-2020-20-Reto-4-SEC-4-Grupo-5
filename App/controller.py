@@ -31,16 +31,8 @@ def loadFile(citibike, tripfile):
     tripfile = cf.data_dir + tripfile
     input_file = csv.DictReader(open(tripfile, encoding="utf-8"),
                                 delimiter=",")
-    laststation = None
     for station in input_file:
         model.addStationRoute(citibike, station)
-        #if laststation is not None:
-            #samestation = laststation['start station id'] == station['start station id']
-            #samedirection = laststation['end station id'] == station['end station id']
-            #if samestation and samedirection:
-                #model.addStopConnection(citibike, laststation, station)
-        #laststation = station
-    #model.addRouteStation(citibike)
     return citibike
 
 # ___________________________________________________
