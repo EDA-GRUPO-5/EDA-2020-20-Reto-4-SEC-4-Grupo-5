@@ -85,8 +85,10 @@ def addStationRoute(citibike, trip):
     end = trip['end station id']
     duration = float(trip['tripduration'])
 
-    addStation(citibike, start); addStation(citibike, end)
+    addStationToGraph(citibike, start); addStationToGraph(citibike, end)
     addRoute(citibike, start, end, duration)
+
+    addStationToMap(citibike, trip)
 
     #addTime(citibike, trip)
 
@@ -102,11 +104,24 @@ def addStationRoute(citibike, trip):
 # Funciones de Load
 # ==============================
 
-def addStation(citibike, station):
+def addStationToGraph(citibike, station):
 
     if not gr.containsVertex(citibike['connections'], station):
         gr.insertVertex(citibike['connections'], station)
 
+    return citibike
+
+def addStationToMap(citibike, trip):
+    entry = m.get(citibike['stations'], trip['end station id'])
+    if entry is None:
+        lstroutes = lt.newList(cmpfunction=compareroutes)
+        lt.addLast(lstroutes, trip['start station id'])
+        m.put(citibike['stations'], trip['end station id'], lstroutes)
+    else:
+        lstroutes = entry['value']
+        info = trip['start station id']
+        if not lt.isPresent(lstroutes, info):
+            lt.addLast(lstroutes, info)
     return citibike
 
 def addRoute(citibike, start, end, duration):
@@ -227,7 +242,7 @@ def criticStations(citibike):
 
     ms.mergesort(tempLT, greatequal)
 
-    for i in range(1,4):
+    for i in range(1,10):
         lt.addLast(top3LS, lt.getElement(tempLT, i))
     for i in range(3):
         lt.addLast(inTop3, lt.getElement(tempLT, lt.size(tempLT)-i))
@@ -236,14 +251,16 @@ def criticStations(citibike):
     while vxl <= lt.size(tempLT) and lt.size(topLlegada) <= 3:
         if lt.isPresent(top3LS, lt.getElement(ltKeys, vxl)['count']):
             vxA = getStation(citibike, lt.getElement(ltKeys, vxl)['vertexA'])[1]
-            lt.addLast(topLlegada, vxA)
+            if not lt.isPresent(topLlegada, vxA):
+                lt.addLast(topLlegada, vxA)
         vxl +=1
 
     vxs = 1
     while vxs <= lt.size(tempLT) and lt.size(topSalida) <= 3:
         if lt.isPresent(top3LS, lt.getElement(ltKeys, vxs)['count']):
             vxB = getStation(citibike, lt.getElement(ltKeys, vxs)['vertexB'])[1]
-            lt.addLast(topSalida, vxB)
+            if not lt.isPresent(topLlegada, vxB):
+                lt.addLast(topSalida, vxB)
         vxs +=1
 
     vxin = 1
@@ -263,11 +280,9 @@ def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longi
     """
     #Primero encontrar las dos estaciones mas cercanas a las dos posiciones, despues usando el grafo para calcular el tiempo
     # Se usa el grafo o se usa otra estructura de datos?
-    #Arbol (maybe)
     actualNearStation, destinyNearStation = None, None
-    tripTime = 0
-    stationList = lt.newList()
-    lt.addFirst(stationList, 'Ninguno')
+    tripTime = djk.distTo(actualNearStation, destinyNearStation)
+    stationList = djk.pathTo(actualNearStation, destinyNearStation)
 
     return actualNearStation, destinyNearStation, tripTime, stationList
 

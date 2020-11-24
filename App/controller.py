@@ -33,6 +33,7 @@ def loadFile(citibike, tripfile):
                                 delimiter=",")
     for station in input_file:
         model.addStationRoute(citibike, station)
+    
     return citibike
 
 # ___________________________________________________
