@@ -24,7 +24,6 @@ de creacion y consulta sobre las estructuras de datos.
 
 # Funciones para agregar informacion al grafo
 
-
 def newCitibike():
 
     citibike = {
@@ -50,7 +49,6 @@ def newCitibike():
 
     citibike['coords'] = om.newMap(omaptype='BST',
                                     comparefunction=compareStations)
-
     
     return citibike
 
@@ -175,67 +173,54 @@ def compareroutes(route1, route2):
 # Funciones de Requerimientos
 # ==============================
 
-
 def criticStations(citibike):
     """
     Top 3 Llegada, Top 3 Salida y Top 3 menos usadas
     """
     #Listas respuesta
-    topLlegada = lt.newList(datastructure='ARRAY_LIST')
-    topSalida = lt.newList(datastructure='ARRAY_LIST')
-    intopUsadas = lt.newList(datastructure='ARRAY_LIST')
+    topLlegada = lt.newList(datastructure='ARRAY_LIST', cmpfunction=compareroutes)
+    topSalida = lt.newList(datastructure='ARRAY_LIST', cmpfunction=compareroutes)
+    intopUsadas = lt.newList(datastructure='ARRAY_LIST', cmpfunction=compareroutes)
 
     #Listas temporales para obtener el top 3
-    countLlegada = lt.newList(datastructure='ARRAY_LIST')
-    countSalida = lt.newList(datastructure='ARRAY_LIST')
-    incountUsadas = lt.newList(datastructure='ARRAY_LIST')
-    total = 0
-    ltKeys = gr.edges(citibike['connections'])
-    for arc in range(1, lt.size(ltKeys)+1):
-        arcVx = lt.getElement(ltKeys, arc)
-        total += gr.edgeCount(citibike['connections'], arcVx)
-
-    print(total)
-    """top3L = lt.newList(datastructure='ARRAY_LIST', cmpfunction=compareroutes)
-    top3S = lt.newList(datastructure='ARRAY_LIST', cmpfunction=compareroutes)
+    top3LS = lt.newList(datastructure='ARRAY_LIST', cmpfunction=compareroutes)
     inTop3 = lt.newList(datastructure='ARRAY_LIST', cmpfunction=compareroutes)
 
-    #Ordenar las 3 listas para despues obtener los 3 valores que esten en el top
-    ms.mergesort(countLlegada, greatequal)
-    ms.mergesort(countSalida, greatequal)
-    ms.mergesort(incountUsadas, lessequal)
+    tempLT = lt.newList(cmpfunction=compareroutes)
+    ltKeys = gr.edges(citibike['connections'])
+    for arc in range(1, lt.size(ltKeys)+1):
+        lt.addLast(tempLT, lt.getElement(ltKeys, arc)['count'])
+
+    ms.mergesort(tempLT, greatequal)
 
     for i in range(1,4):
-        lt.addLast(top3L, lt.getElement(countLlegada, i))
-        lt.addLast(top3S, lt.getElement(countSalida, i))
-        lt.addLast(inTop3, lt.getElement(incountUsadas, i))
+        lt.addLast(top3LS, lt.getElement(tempLT, i))
+    for i in range(3):
+        lt.addLast(inTop3, lt.getElement(tempLT, lt.size(tempLT)-i))
 
+    vxl = 1
+    while vxl <= lt.size(tempLT) and lt.size(topLlegada) <= 3:
+        if lt.isPresent(top3LS, lt.getElement(ltKeys, vxl)['count']):
+            vxA = getStation(citibike, lt.getElement(ltKeys, vxl)['vertexA'])[1]
+            lt.addLast(topLlegada, vxA)
+        vxl +=1
 
-    Vxl = 1
-    while lt.size(topLlegada) < 3 and Vxl <= lt.size(ltKeys):
-        stationVxl = lt.getElement(ltKeys, Vxl)
-        if lt.isPresent(top3L, gr.indegree(citibike['connections'], stationVxl)):
-            stationNameL = getStation(citibike, stationVxl, 0)
-            lt.addLast(topLlegada, stationNameL[1])
-        Vxl += 1
+    vxs = 1
+    while vxs <= lt.size(tempLT) and lt.size(topSalida) <= 3:
+        if lt.isPresent(top3LS, lt.getElement(ltKeys, vxs)['count']):
+            vxB = getStation(citibike, lt.getElement(ltKeys, vxs)['vertexB'])[1]
+            lt.addLast(topSalida, vxB)
+        vxs +=1
 
-    Vxs = 1
-    while lt.size(topSalida) < 3 and Vxs <= lt.size(ltKeys):
-        stationVxs = lt.getElement(ltKeys, Vxs)
-        if lt.isPresent(top3S, gr.outdegree(citibike['connections'], stationVxs)):
-            stationNameS = getStation(citibike, stationVxs, 1)
-            lt.addLast(topSalida, stationNameS[1])
-        Vxs += 1
+    vxin = 1
+    while vxin <= lt.size(tempLT) and lt.size(intopUsadas) <= 3:
+        if lt.isPresent(inTop3, lt.getElement(ltKeys, vxin)['count']):
+            vxA =  getStation(citibike, lt.getElement(ltKeys, vxin)['vertexA'])[1]
+            if not lt.isPresent(intopUsadas, vxA):
+                lt.addLast(intopUsadas, vxA)
+        vxin +=1
 
-    Vxi = 1
-    while lt.size(intopUsadas) < 3 and Vxi <= lt.size(ltKeys):
-        stationVxi = lt.getElement(ltKeys, Vxi)
-        if lt.isPresent(inTop3, gr.degree(citibike['connections'], stationVxi)):
-            stationNameI = getStation(citibike, stationVxi, 2)
-            lt.addLast(intopUsadas, stationNameI[1])
-        Vxi += 1"""
-    return None, None, None
-    #return topLlegada, topSalida, intopUsadas
+    return topLlegada, topSalida, intopUsadas
 
 def rutaPorResistencia(citibike, tiempoMax, idEstacionInicial):
     """
@@ -281,6 +266,7 @@ def ageStations(citibike, team):
 #=-=-=-=-=-=-=-=-=-=-=-=
 #Funciones usadas
 #=-=-=-=-=-=-=-=-=-=-=-=
+
 def lessequal(k1,k2=None):
     if k2 == None:
         return True
@@ -302,7 +288,7 @@ def getStation(citibike, idStation, e_s_a=0):
     return None, None
 
 #Harvesine Formula
-#Nota: tarda menos que importar harvesine (por 0.02 ms)
+#Nota: Tarda menos que importar harvesine (por 0.02 ms)
 def distance(lat1, lon1, lat2, lon2):
     p = pi/180
     a = 0.5 - cos((lat2-lat1)*p)/2 + cos(lat1*p)*cos(lat2*p) * (1-cos((lon2-lon1)*p)) / 2
