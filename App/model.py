@@ -1,28 +1,3 @@
-"""
- * Copyright 2020, Departamento de sistemas y Computación
- * Universidad de Los Andes
- *
- *
- * Desarrolado para el curso ISIS1225 - Estructuras de Datos y Algoritmos
- *
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * Contribución de:
- *
- * Dario Correal
- *
- """
 from os import cpu_count
 import config
 from DISClib.ADT.graph import gr
@@ -79,7 +54,6 @@ def newCitibike():
     
     return citibike
 
-
 def addStationRoute(citibike, trip):
     start = trip['start station id']
     end = trip['end station id']
@@ -96,7 +70,6 @@ def addStationRoute(citibike, trip):
     #Req 6
     #addStationCoords(citibike, trip)
     return citibike
-
 
 # ==============================
 # Funciones de Load
@@ -144,7 +117,6 @@ def addStationName(citibike, station):
         m.put(citibike['name_IDstations'], stationStart, station['start station name'])
     
     return citibike
-    
 
 def addStationCoords(citibike, trip):
     """
@@ -159,7 +131,6 @@ def addStationCoords(citibike, trip):
     if not om.contains(entry, stationEnd):
         om.put(entry, stationEnd, trip['end station id'])
     return citibike
-
 
 def totalConnections(citibike):
     """
@@ -188,7 +159,6 @@ def compareStations(station, keyvaluestation):
         return 1
     else:
         return -1
-
 
 def compareroutes(route1, route2):
     """
@@ -267,7 +237,23 @@ def criticStations(citibike):
     return None, None, None
     #return topLlegada, topSalida, intopUsadas
 
-
+def rutaPorResistencia(citibike, tiempoMax, idEstacionInicial):
+    """
+    Rutas turisticas por resistencia
+    Req 4
+    """
+    ltEdges = gr.edges(citibike['connections']) #Vertices - Peso arcos
+    for i in range(1, lt.size(ltEdges)+1): 
+        station = lt.getElement(ltEdges, i) #Estacion final - Estacion inicial (id) -> str
+        if str(idEstacionInicial) == station['vertexA']: #Identificar los que tienen el mismo idEstacionInicial
+            duration = station['weight']/60 #Duracion (tripduration) en minutos
+            duration = round(duration,2)
+            if duration <= tiempoMax:
+                rutasLista = lt.newList(datastructure='ARRAY_LIST')
+                lt.addFirst(rutasLista, station['vertexA'])
+                lt.addLast(rutasLista, station['vertexB'])
+                lt.addLast(rutasLista, duration)
+                print (rutasLista['elements'])
 
 def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longitudDestino):
     """
@@ -291,7 +277,6 @@ def ageStations(citibike, team):
     lt.addFirst(rta, (None, None, 0))
 
     return rta
-
 
 #=-=-=-=-=-=-=-=-=-=-=-=
 #Funciones usadas
