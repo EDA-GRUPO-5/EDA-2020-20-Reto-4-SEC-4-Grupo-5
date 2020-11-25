@@ -30,12 +30,12 @@ def printMenu():
     print("2- Cargar información de bicicletas de Nueva York")
     print("3- Cantidad de clusters de viajes (REQ 1)")
     print("4- Ruta turistica circular (REQ 2)")
-    print("5- Ruta turistica de menor tiempo/<Estaciones criticas> (REQ 3)")
+    print("5- Ruta turistica de menor tiempo / Estaciones criticas (REQ 3)")
     print("6- Ruta turistica por resistencia (REQ 4)")
     print("7- Recomendador de rutas (REQ 5)")
     print("8- Ruta de interes turistico (REQ 6)")
-    print("9- Cantidad de clusters de viajes (REQ 7)")
-    print("10- Cantidad de clusters de viajes (REQ 8)")
+    print("9- Identificación de Estaciones para Publicidad (REQ 7) - Bono")
+    print("10- Identificación de Bicicletas para Mantenimiento (REQ 8) - Bono")
     print("0- Salir")
     print("*******************************************")
 
@@ -91,13 +91,13 @@ def optionSix():
         tiempoMax = input("\nTiempo máximo de resistencia (Minutos): ")
         idEstacionInicial = input("ID estación inicial: ")
         try:
-            tiempoMax, idEstacionInicial = float(tiempoMax), int(idEstacionInicial)
+            tiempoMax, idEstacionInicial = int(tiempoMax), int(idEstacionInicial)
         except ValueError:
             print('Ingrese valores validos')
         else:
             var = False
     listaRutas = controller.rutaPorResistencia(citibike, tiempoMax, idEstacionInicial)
-    print(listaRutas)
+    print('Rutas turisticas desde la estacion', idEstacionInicial, 'con', tiempoMax, 'minutos: \n', listaRutas)
 
 def optionSeven():
     """
