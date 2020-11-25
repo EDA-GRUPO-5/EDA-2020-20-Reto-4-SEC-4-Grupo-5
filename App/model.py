@@ -1,28 +1,3 @@
-"""
- * Copyright 2020, Departamento de sistemas y Computación
- * Universidad de Los Andes
- *
- *
- * Desarrolado para el curso ISIS1225 - Estructuras de Datos y Algoritmos
- *
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * Contribución de:
- *
- * Dario Correal
- *
- """
 from os import cpu_count
 import config
 from DISClib.ADT.graph import gr
@@ -73,8 +48,8 @@ def newCitibike():
                                         size=1000,
                                         comparefunction=compareStations)
 
-    citibike['coords'] = m.newMap(numelements=1000,
-                                comparefunction=compareStations)
+    citibike['coords'] = om.newMap(omaptype='BST',
+                                    comparefunction=compareroutes)
 
     
     return citibike
@@ -85,11 +60,8 @@ def addStationRoute(citibike, trip):
     end = trip['end station id']
     duration = float(trip['tripduration'])
 
-    addStationToGraph(citibike, start)
-    addStationToGraph(citibike, end)
+    addStation(citibike, start); addStation(citibike, end)
     addRoute(citibike, start, end, duration)
-
-    addStationToMap(citibike, trip)
 
     #addTime(citibike, trip)
 
@@ -105,24 +77,11 @@ def addStationRoute(citibike, trip):
 # Funciones de Load
 # ==============================
 
-def addStationToGraph(citibike, station):
+def addStation(citibike, station):
 
     if not gr.containsVertex(citibike['connections'], station):
         gr.insertVertex(citibike['connections'], station)
 
-    return citibike
-
-def addStationToMap(citibike, trip):
-    entry = m.get(citibike['stations'], trip['end station id'])
-    if entry is None:
-        lstroutes = lt.newList(cmpfunction=compareroutes)
-        lt.addLast(lstroutes, trip['start station id'])
-        m.put(citibike['stations'], trip['end station id'], lstroutes)
-    else:
-        lstroutes = entry['value']
-        info = trip['start station id']
-        if not lt.isPresent(lstroutes, info):
-            lt.addLast(lstroutes, info)
     return citibike
 
 def addRoute(citibike, start, end, duration):
@@ -169,14 +128,11 @@ def addStationCoords(citibike, trip):
     entry = citibike['coords']
     stationStart = (trip['start station latitude'], trip['start station longitude'])
     stationEnd = (trip['end station latitude'], trip['end station longitude'])
+    if not om.contains(entry, int(trip['start station id'])):
+        om.put(entry, int(trip['start station id']),stationStart)
 
-    e1 = m.get(entry, trip['start station id'])
-    if e1 is None:
-        m.put(entry, trip['start station id'], stationStart)
-
-    e2 = m.get(entry, trip['end station id'])
-    if e2 is None:
-        m.put(entry, trip['end station id'], stationEnd)
+    if not om.contains(entry, int(trip['end station id'])):
+        om.put(entry, int(trip['end station id']), stationEnd)
     return citibike
 
 
@@ -246,7 +202,7 @@ def criticStations(citibike):
 
     ms.mergesort(tempLT, greatequal)
 
-    for i in range(1,10):
+    for i in range(1,4):
         lt.addLast(top3LS, lt.getElement(tempLT, i))
     for i in range(3):
         lt.addLast(inTop3, lt.getElement(tempLT, lt.size(tempLT)-i))
@@ -255,16 +211,14 @@ def criticStations(citibike):
     while vxl <= lt.size(tempLT) and lt.size(topLlegada) <= 3:
         if lt.isPresent(top3LS, lt.getElement(ltKeys, vxl)['count']):
             vxA = getStation(citibike, lt.getElement(ltKeys, vxl)['vertexA'])[1]
-            if not lt.isPresent(topLlegada, vxA):
-                lt.addLast(topLlegada, vxA)
+            lt.addLast(topLlegada, vxA)
         vxl +=1
 
     vxs = 1
     while vxs <= lt.size(tempLT) and lt.size(topSalida) <= 3:
         if lt.isPresent(top3LS, lt.getElement(ltKeys, vxs)['count']):
             vxB = getStation(citibike, lt.getElement(ltKeys, vxs)['vertexB'])[1]
-            if not lt.isPresent(topLlegada, vxB):
-                lt.addLast(topSalida, vxB)
+            lt.addLast(topSalida, vxB)
         vxs +=1
 
     vxin = 1
@@ -277,6 +231,24 @@ def criticStations(citibike):
 
     return topLlegada, topSalida, intopUsadas
 
+def rutaPorResistencia(citibike, tiempoMax, idEstacionInicial):
+    """
+    Rutas turisticas por resistencia
+    Req 4
+    """
+    ltEdges = gr.edges(citibike['connections']) #Vertices - Peso arcos
+    for i in range(1, lt.size(ltEdges)+1): 
+        station = lt.getElement(ltEdges, i) #Estacion final - Estacion inicial (id) -> str
+        if str(idEstacionInicial) == station['vertexA']: #Identificar los que tienen el mismo idEstacionInicial
+            duration = station['weight']/60 #Duracion (tripduration) en minutos
+            duration = round(duration,2)
+            if duration <= tiempoMax:
+                rutasLista = lt.newList(datastructure='ARRAY_LIST')
+                lt.addFirst(rutasLista, station['vertexA'])
+                lt.addLast(rutasLista, station['vertexB'])
+                lt.addLast(rutasLista, duration)
+                print (rutasLista['elements'])
+                
 
 def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longitudDestino):
     """
@@ -326,10 +298,10 @@ def ageStations(citibike, team):
 
     return rta
 
-
 #=-=-=-=-=-=-=-=-=-=-=-=
 #Funciones usadas
 #=-=-=-=-=-=-=-=-=-=-=-=
+
 def lessequal(k1,k2=None):
     if k2 == None:
         return True
@@ -349,7 +321,7 @@ def getStation(citibike, idStation):
     return None, None
 
 #Harvesine Formula
-#Nota: tarda menos que importar harvesine (por 0.02 s)
+#Nota: tarda menos que importar harvesine (por 0.02 ms)
 def distance(lat1, lon1, lat2, lon2):
     p = pi/180
     a = 0.5 - cos((lat2-lat1)*p)/2 + cos(lat1*p)*cos(lat2*p) * (1-cos((lon2-lon1)*p)) / 2

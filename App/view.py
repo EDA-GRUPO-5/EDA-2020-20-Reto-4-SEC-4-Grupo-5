@@ -82,7 +82,7 @@ def optionFive():
     print(f'Las 3 estaciones en el TOP de llegada: <{lt.getElement(llegada,1)}>, <{lt.getElement(llegada,2)}>, <{lt.getElement(llegada,3)}>')
     print(f'Las 3 estaciones en el TOP de salida: <{lt.getElement(salida,1)}>, <{lt.getElement(salida,2)}>, <{lt.getElement(salida,3)}>')
     print(f'Las 3 estaciones en el TOP de menos usadas: <{lt.getElement(menosUsadas,1)}>, <{lt.getElement(menosUsadas,2)}>, <{lt.getElement(menosUsadas,3)}>')
-
+    
 def optionSix():
     """
     Req 4
