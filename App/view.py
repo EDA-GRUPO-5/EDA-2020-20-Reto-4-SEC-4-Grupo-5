@@ -16,7 +16,7 @@ file3 = '201801-3-citibike-tripdata.csv'
 file4 = '201801-4-citibike-tripdata.csv'
 file5 = '201801-1-citibike-tripdata-small.csv'
 filename = file1
-recursionLimit = 80000
+recursionLimit = 8000
 
 # ___________________________________________________
 #  Menu principal
@@ -36,6 +36,7 @@ def printMenu():
     print("8- Ruta de interes turistico (REQ 6)")
     print("9- Cantidad de clusters de viajes (REQ 7)")
     print("10- Cantidad de clusters de viajes (REQ 8)")
+
     print("0- Salir")
     print("*******************************************")
 
@@ -97,8 +98,7 @@ def optionSix():
         else:
             var = False
     listaRutas = controller.rutaPorResistencia(citibike, tiempoMax, idEstacionInicial)
-    if listaRutas == None:
-        print('\nEstas son las rutas turisticas que se pueden realizar.\n')
+    print('\nRutas turísticas por resistencia: \n', listaRutas)
 
 def optionSeven():
     """
@@ -129,8 +129,10 @@ def optionEight():
     print(f'La estacion mas cercana a su ubicacion destino es: <{nearStationDestiny}>')
     print(f'El tiempo estimado de viaje es: <{tripTime}>')
     print('La lista de estaciones en la ruta es:\n<')
-    for item in range(lt.size(stationList)):
-        print(f'\t{item+1}) {lt.getElement(stationList, item)}')
+    if not stationList is None:
+        for item in range(st.size(stationList)):
+            print(f'\t{item+1}) {st.pop(stationList)}')
+    else: print('\tNo hay estaciones de por medio')
     print('>')
 
 def optionNine():
