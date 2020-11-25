@@ -24,23 +24,14 @@ def loadFile(citibike, tripfile):
     Carga los datos de los archivos CSV en el modelo.
     Se crea un arco entre cada par de estaciones que
     pertenecen al mismo servicio y van en el mismo sentido.
-
     addRouteConnection crea conexiones entre diferentes rutas
     servidas en una misma estación.
     """
     tripfile = cf.data_dir + tripfile
     input_file = csv.DictReader(open(tripfile, encoding="utf-8"),
                                 delimiter=",")
-    laststation = None
     for station in input_file:
         model.addStationRoute(citibike, station)
-        #if laststation is not None:
-            #samestation = laststation['start station id'] == station['start station id']
-            #samedirection = laststation['end station id'] == station['end station id']
-            #if samestation and samedirection:
-                #model.addStopConnection(citibike, laststation, station)
-        #laststation = station
-    #model.addRouteStation(citibike)
     return citibike
 
 # ___________________________________________________
