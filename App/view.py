@@ -36,7 +36,6 @@ def printMenu():
     print("8- Ruta de interes turistico (REQ 6)")
     print("9- Cantidad de clusters de viajes (REQ 7)")
     print("10- Cantidad de clusters de viajes (REQ 8)")
-
     print("0- Salir")
     print("*******************************************")
 
@@ -98,7 +97,7 @@ def optionSix():
         else:
             var = False
     listaRutas = controller.rutaPorResistencia(citibike, tiempoMax, idEstacionInicial)
-    print('\nRutas turísticas por resistencia: \n', listaRutas)
+    print(listaRutas)
 
 def optionSeven():
     """
