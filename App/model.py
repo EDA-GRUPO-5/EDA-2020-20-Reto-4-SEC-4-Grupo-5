@@ -282,13 +282,13 @@ def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longi
     """
     Estacion mas cercana a la posicion actual, Estacion mas cercana al destino, (Menor) Tiempo estimado, Lista de estaciones para llegar al destino
     """
-    #Primero encontrar las dos estaciones mas cercanas a las dos posiciones, despues usando el grafo para calcular el tiempo
-    # Se usa el grafo o se usa otra estructura de datos?
     actualNearStationID = destinyNearStationID = None
+
 
     coords = citibike['coords']
     actualNear = destinyNear = float('INF')
     keyList = m.keySet(coords)
+
 
     for i in range(m.size(coords)):
         key = lt.getElement(keyList, i)
@@ -306,9 +306,6 @@ def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longi
             destinyNear = distanceToDestiny
             destinyNearStationID = key
 
-    if destinyNearStationID == actualNearStationID:
-        print('Algo malo manin')
-        return None, None, None, None
 
     actualNearStation = getStation(citibike, actualNearStationID)
     destinyNearStation = getStation(citibike, destinyNearStationID)
