@@ -22,8 +22,7 @@ de creacion y consulta sobre las estructuras de datos.
 #                       API
 # =====================================================
 
-# Funciones para agregar informacion al grafo
-
+#Funciones para agregar informacion al grafo
 
 def newCitibike():
 
@@ -50,10 +49,8 @@ def newCitibike():
 
     citibike['coords'] = om.newMap(omaptype='BST',
                                     comparefunction=compareroutes)
-
-    
+ 
     return citibike
-
 
 def addStationRoute(citibike, trip):
     start = trip['start station id']
@@ -71,7 +68,6 @@ def addStationRoute(citibike, trip):
     #Req 6
     addStationCoords(citibike, trip)
     return citibike
-
 
 # ==============================
 # Funciones de Load
@@ -119,7 +115,6 @@ def addStationName(citibike, station):
         m.put(citibike['name_IDstations'], stationStart, station['start station name'])
     
     return citibike
-    
 
 def addStationCoords(citibike, trip):
     """
@@ -134,7 +129,6 @@ def addStationCoords(citibike, trip):
     if not om.contains(entry, int(trip['end station id'])):
         om.put(entry, int(trip['end station id']), stationEnd)
     return citibike
-
 
 def totalConnections(citibike):
     """
@@ -164,7 +158,6 @@ def compareStations(station, keyvaluestation):
     else:
         return -1
 
-
 def compareroutes(route1, route2):
     """
     Compara dos rutas
@@ -179,7 +172,6 @@ def compareroutes(route1, route2):
 # ==============================
 # Funciones de Requerimientos
 # ==============================
-
 
 def criticStations(citibike):
     """
@@ -198,7 +190,6 @@ def criticStations(citibike):
     ltKeys = gr.edges(citibike['connections'])
     for arc in range(1, lt.size(ltKeys)+1):
         lt.addLast(tempLT, lt.getElement(ltKeys, arc)['count'])
-
 
     ms.mergesort(tempLT, greatequal)
 
@@ -241,26 +232,23 @@ def rutaPorResistencia(citibike, tiempoMax, idEstacionInicial):
         station = lt.getElement(ltEdges, i) #Estacion final - Estacion inicial (id) -> str
         if str(idEstacionInicial) == station['vertexA']: #Identificar los que tienen el mismo idEstacionInicial
             duration = station['weight']/60 #Duracion (tripduration) en minutos
-            duration = round(duration,2)
-            if duration <= tiempoMax:
-                rutasLista = lt.newList(datastructure='ARRAY_LIST')
-                lt.addFirst(rutasLista, station['vertexA'])
-                lt.addLast(rutasLista, station['vertexB'])
-                lt.addLast(rutasLista, duration)
-                print (rutasLista['elements'])
+            duration = round(duration,3)
+            listaRutas = lt.newList(datastructure='ARRAY_LIST')
+            if duration <= tiempoMax: 
+                lt.addFirst(listaRutas, station['vertexA']) #Id inicial
+                lt.addLast(listaRutas, station['vertexB']) #Id final
+                lt.addLast(listaRutas, duration)
+                print (listaRutas['elements'])
                 
-
 def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longitudDestino):
     """
     Estacion mas cercana a la posicion actual, Estacion mas cercana al destino, (Menor) Tiempo estimado, Lista de estaciones para llegar al destino
     """
     actualNearStationID = destinyNearStationID = None
 
-
     coords = citibike['coords']
     actualNear = destinyNear = float('INF')
     keyList = m.keySet(coords)
-
 
     for i in range(m.size(coords)):
         key = lt.getElement(keyList, i)
@@ -278,15 +266,13 @@ def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longi
             destinyNear = distanceToDestiny
             destinyNearStationID = key
 
-
     actualNearStation = getStation(citibike, actualNearStationID)
     destinyNearStation = getStation(citibike, destinyNearStationID)
 
-    
     structureActual = djk.Dijkstra(citibike['connections'], actualNearStationID)
     tripTime = djk.distTo(structureActual, destinyNearStationID)
     stationList = djk.pathTo(structureActual, destinyNearStationID)
-
+    
     return actualNearStation, destinyNearStation, tripTime, stationList
 
 def ageStations(citibike, team):
