@@ -129,8 +129,10 @@ def optionEight():
     print(f'La estacion mas cercana a su ubicacion destino es: <{nearStationDestiny}>')
     print(f'El tiempo estimado de viaje es: <{tripTime}>')
     print('La lista de estaciones en la ruta es:\n<')
-    for item in range(lt.size(stationList)):
-        print(f'\t{item+1}) {lt.getElement(stationList, item)}')
+    if not stationList is None:
+        for item in range(st.size(stationList)):
+            print(f'\t{item+1}) {st.pop(stationList)}')
+    else: print('\tNo hay estaciones de por medio')
     print('>')
 
 def optionNine():

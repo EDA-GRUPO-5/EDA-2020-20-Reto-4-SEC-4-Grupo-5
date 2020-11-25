@@ -73,8 +73,8 @@ def newCitibike():
                                         size=1000,
                                         comparefunction=compareStations)
 
-    citibike['coords'] = om.newMap(omaptype='BST',
-                                    comparefunction=compareroutes)
+    citibike['coords'] = m.newMap(numelements=1000,
+                                comparefunction=compareStations)
 
     
     return citibike
@@ -85,7 +85,8 @@ def addStationRoute(citibike, trip):
     end = trip['end station id']
     duration = float(trip['tripduration'])
 
-    addStationToGraph(citibike, start); addStationToGraph(citibike, end)
+    addStationToGraph(citibike, start)
+    addStationToGraph(citibike, end)
     addRoute(citibike, start, end, duration)
 
     addStationToMap(citibike, trip)
@@ -168,11 +169,14 @@ def addStationCoords(citibike, trip):
     entry = citibike['coords']
     stationStart = (trip['start station latitude'], trip['start station longitude'])
     stationEnd = (trip['end station latitude'], trip['end station longitude'])
-    if not om.contains(entry, int(trip['start station id'])):
-        om.put(entry, int(trip['start station id']),stationStart)
 
-    if not om.contains(entry, int(trip['end station id'])):
-        om.put(entry, int(trip['end station id']), stationEnd)
+    e1 = m.get(entry, trip['start station id'])
+    if e1 is None:
+        m.put(entry, trip['start station id'], stationStart)
+
+    e2 = m.get(entry, trip['end station id'])
+    if e2 is None:
+        m.put(entry, trip['end station id'], stationEnd)
     return citibike
 
 
@@ -280,9 +284,39 @@ def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longi
     """
     #Primero encontrar las dos estaciones mas cercanas a las dos posiciones, despues usando el grafo para calcular el tiempo
     # Se usa el grafo o se usa otra estructura de datos?
-    actualNearStation, destinyNearStation = None, None
-    tripTime = djk.distTo(actualNearStation, destinyNearStation)
-    stationList = djk.pathTo(actualNearStation, destinyNearStation)
+    actualNearStationID = destinyNearStationID = None
+
+    coords = citibike['coords']
+    actualNear = destinyNear = float('INF')
+    keyList = m.keySet(coords)
+
+    for i in range(m.size(coords)):
+        key = lt.getElement(keyList, i)
+        lat, lon = m.get(coords, key)['value']
+        lat = float(lat); lon = float(lon)
+
+        distanceToActual = distance(lat, lon, latitudActual, longitudActual)
+        distanceToDestiny = distance(lat, lon, latitudDestino, longitudDestino)
+
+        if distanceToActual <= actualNear:
+            actualNear = distanceToActual
+            actualNearStationID = key
+            
+        if distanceToDestiny <= destinyNear:
+            destinyNear = distanceToDestiny
+            destinyNearStationID = key
+
+    if destinyNearStationID == actualNearStationID:
+        print('Algo malo manin')
+        return None, None, None, None
+
+    actualNearStation = getStation(citibike, actualNearStationID)
+    destinyNearStation = getStation(citibike, destinyNearStationID)
+
+    
+    structureActual = djk.Dijkstra(citibike['connections'], actualNearStationID)
+    tripTime = djk.distTo(structureActual, destinyNearStationID)
+    stationList = djk.pathTo(structureActual, destinyNearStationID)
 
     return actualNearStation, destinyNearStation, tripTime, stationList
 
@@ -318,7 +352,7 @@ def getStation(citibike, idStation):
     return None, None
 
 #Harvesine Formula
-#Nota: tarda menos que importar harvesine (por 0.02 ms)
+#Nota: tarda menos que importar harvesine (por 0.02 s)
 def distance(lat1, lon1, lat2, lon2):
     p = pi/180
     a = 0.5 - cos((lat2-lat1)*p)/2 + cos(lat1*p)*cos(lat2*p) * (1-cos((lon2-lon1)*p)) / 2
