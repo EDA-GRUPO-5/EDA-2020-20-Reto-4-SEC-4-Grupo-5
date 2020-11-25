@@ -282,39 +282,40 @@ def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longi
     """
     Estacion mas cercana a la posicion actual, Estacion mas cercana al destino, (Menor) Tiempo estimado, Lista de estaciones para llegar al destino
     """
-    #Primero encontrar las dos estaciones mas cercanas a las dos posiciones, despues usando el grafo para calcular el tiempo
-    # Se usa el grafo o se usa otra estructura de datos?
     actualNearStationID = destinyNearStationID = None
+
 
     coords = citibike['coords']
     actualNear = destinyNear = float('INF')
     keyList = m.keySet(coords)
+
+
     for i in range(m.size(coords)):
         key = lt.getElement(keyList, i)
         lat, lon = m.get(coords, key)['value']
         lat = float(lat); lon = float(lon)
+
         distanceToActual = distance(lat, lon, latitudActual, longitudActual)
         distanceToDestiny = distance(lat, lon, latitudDestino, longitudDestino)
+
         if distanceToActual <= actualNear:
             actualNear = distanceToActual
             actualNearStationID = key
+            
         if distanceToDestiny <= destinyNear:
             destinyNear = distanceToDestiny
-            actualNearStationID = key
+            destinyNearStationID = key
 
-    if actualNearStationID != destinyNearStationID:
-        structureActual = djk.Dijkstra(citibike['connections'], actualNearStationID)
-        tripTime = djk.distTo(structureActual, destinyNearStationID)
-        if djk.hasPathTo(structureActual, destinyNearStationID):
-            stationList = djk.pathTo(structureActual, destinyNearStationID)
-        else:
-            stationList = None
 
-        actualNearStation = getStation(citibike, actualNearStationID)
-        destinyNearStation = getStation(citibike, actualNearStationID)
+    actualNearStation = getStation(citibike, actualNearStationID)
+    destinyNearStation = getStation(citibike, destinyNearStationID)
 
-        return actualNearStation, destinyNearStation, tripTime, stationList
-        
+    
+    structureActual = djk.Dijkstra(citibike['connections'], actualNearStationID)
+    tripTime = djk.distTo(structureActual, destinyNearStationID)
+    stationList = djk.pathTo(structureActual, destinyNearStationID)
+
+    return actualNearStation, destinyNearStation, tripTime, stationList
 
 def ageStations(citibike, team):
     """
