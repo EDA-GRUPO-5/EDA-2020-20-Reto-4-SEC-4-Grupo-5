@@ -118,13 +118,6 @@ def addRoute(citibike, start, end, duration):
 
     else:
         gr.addEdgeCount(citibike['connections'], edge)
-        #gr.promediateWeight(citibike['connections'], edge)
-
-"""def addTime(citibike, trip):
-    mapTrip = m.get(citibike['triptime'], trip['start station name'])
-    if mapTrip is None:
-        m.put(citibike['triptime'], trip['start station name'], trip['tripduration'])
-    return citibike"""
 
 def addStationName(citibike, station):
     """
@@ -221,6 +214,7 @@ def compareroutes(route1, route2):
 def criticStations(citibike):
     """
     Top 3 Llegada, Top 3 Salida y Top 3 menos usadas
+    Req 3
     """
     #Listas respuesta
     topLlegada = lt.newList(datastructure='ARRAY_LIST', cmpfunction=compareroutes)
@@ -273,19 +267,20 @@ def rutaPorResistencia(citibike, tiempoMax, idEstacionInicial):
     Req 4
     """
     ltEdges = gr.edges(citibike['connections']) #Retornar lista con todos los arcos del arco (Vertices - Peso Arco)
+    rutas = lt.newList(datastructure='ARRAY_LIST') #Lista vacia para agregar las rutas -> return 
     for i in range(1, lt.size(ltEdges)+1): 
         station = lt.getElement(ltEdges, i) #Estacion final - Estacion inicial (id) -> str
         if str(idEstacionInicial) == station['vertexA']: #Identificar los que tienen el mismo idEstacionInicial
             duration = station['weight']/60 #Duracion (tripduration) en minutos
             duration = round(duration, 2)
-            listaRutas = lt.newList(datastructure='ARRAY_LIST')
-            if duration <= tiempoMax: 
-                lt.addFirst(listaRutas, (station['vertexA'], station['vertexB'], duration))
-                print (listaRutas['elements'])
+            if duration <= tiempoMax:
+                lt.addLast(rutas, (station['vertexA'], station['vertexB'], duration))
+    return rutas['elements']
                 
 def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longitudDestino):
     """
     Estacion mas cercana a la posicion actual, Estacion mas cercana al destino, (Menor) Tiempo estimado, Lista de estaciones para llegar al destino
+    Req 6
     """
     actualNearStationID = destinyNearStationID = None
 
@@ -310,7 +305,6 @@ def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longi
         if distanceToDestiny < destinyNear and s_e == 1:
             destinyNear = distanceToDestiny
             destinyNearStationID = key
-
 
     #Obtener el nombre
     actualNearStation = getStation(citibike, actualNearStationID)
