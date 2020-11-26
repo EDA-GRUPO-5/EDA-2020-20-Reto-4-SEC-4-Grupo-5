@@ -9,7 +9,6 @@ from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
 
 from DISClib.Algorithms.Sorting import mergesort as ms
-from DISClib.ADT import orderedmap as om
 from DISClib.ADT import stack as st
 from math import cos, asin, sqrt, pi
 assert config
@@ -143,7 +142,7 @@ def addBirthYear(citibike, trip):
     
     entry = citibike['components']
     year = trip['birth year']
-    
+
     if not m.contains(entry, int(trip['start station id'])):
         m.put(entry, int(trip['start station id']), year)
 
