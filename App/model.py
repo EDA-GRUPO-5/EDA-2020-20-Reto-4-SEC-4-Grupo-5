@@ -1,3 +1,28 @@
+"""
+ * Copyright 2020, Departamento de sistemas y Computación
+ * Universidad de Los Andes
+ *
+ *
+ * Desarrolado para el curso ISIS1225 - Estructuras de Datos y Algoritmos
+ *
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Contribución de:
+ *
+ * Dario Correal
+ *
+ """
 from os import cpu_count
 import config
 from DISClib.ADT.graph import gr
@@ -340,7 +365,7 @@ def getStation(citibike, idStation):
     return None, None
 
 #Harvesine Formula
-#Nota: tarda menos que importar harvesine (por 0.02 ms)
+#Nota: tarda menos que importar harvesine (por 0.002 s)
 def distance(lat1, lon1, lat2, lon2):
     p = pi/180
     a = 0.5 - cos((lat2-lat1)*p)/2 + cos(lat1*p)*cos(lat2*p) * (1-cos((lon2-lon1)*p)) / 2
