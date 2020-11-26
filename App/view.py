@@ -1,3 +1,4 @@
+from os import stat
 import sys
 import config
 from App import controller
@@ -125,13 +126,14 @@ def optionEight():
 
     nearStationActual, nearStationDestiny, tripTime, stationList = controller.turistInteres(citibike, latAct, lonAct, latDes, lonDes)
 
-    print(f'La estacion mas cercana a su ubicacion actual es: <{nearStationActual}>')
-    print(f'La estacion mas cercana a su ubicacion destino es: <{nearStationDestiny}>')
+    print(f'La estacion mas cercana a su ubicacion actual es: <{nearStationActual[1]}>')
+    print(f'La estacion mas cercana a su ubicacion destino es: <{nearStationDestiny[1]}>')
     print(f'El tiempo estimado de viaje es: <{tripTime}>')
     print('La lista de estaciones en la ruta es:\n<')
-    if not stationList is None:
-        for item in range(st.size(stationList)):
-            print(f'\t{item+1}) {st.pop(stationList)}')
+    if stationList is not None:
+        for item in range(lt.size(stationList)):
+            station = lt.getElement(stationList, item)
+            print(f'\t{item+1}) De {station[0]} a {station[1]}')
     else: print('\tNo hay estaciones de por medio')
     print('>')
 

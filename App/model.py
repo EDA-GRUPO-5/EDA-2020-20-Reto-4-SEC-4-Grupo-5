@@ -34,7 +34,7 @@ from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
 
 from DISClib.Algorithms.Sorting import mergesort as ms
-from DISClib.ADT import orderedmap as om
+from DISClib.ADT import stack as st
 from math import cos, asin, sqrt, pi
 assert config
 
@@ -167,8 +167,8 @@ def addStationCoords(citibike, trip):
     Para el req 6
     """
     entry = citibike['coords']
-    stationStart = (trip['start station latitude'], trip['start station longitude'])
-    stationEnd = (trip['end station latitude'], trip['end station longitude'])
+    stationStart = (trip['start station latitude'], trip['start station longitude'], 0)
+    stationEnd = (trip['end station latitude'], trip['end station longitude'], 1)
 
     e1 = m.get(entry, trip['start station id'])
     if e1 is None:
@@ -177,6 +177,7 @@ def addStationCoords(citibike, trip):
     e2 = m.get(entry, trip['end station id'])
     if e2 is None:
         m.put(entry, trip['end station id'], stationEnd)
+
     return citibike
 
 
@@ -289,31 +290,43 @@ def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longi
     actualNear = destinyNear = float('INF')
     keyList = m.keySet(coords)
 
-
+    #Conseguir las estaciones mas cercanas al destino
     for i in range(m.size(coords)):
         key = lt.getElement(keyList, i)
-        lat, lon = m.get(coords, key)['value']
+        lat, lon, s_e = m.get(coords, key)['value']
         lat = float(lat); lon = float(lon)
 
         distanceToActual = distance(lat, lon, latitudActual, longitudActual)
         distanceToDestiny = distance(lat, lon, latitudDestino, longitudDestino)
 
-        if distanceToActual <= actualNear:
+        #s_e esta para verificar que sea entrada o salida
+        if distanceToActual < actualNear and s_e == 0:
             actualNear = distanceToActual
             actualNearStationID = key
             
-        if distanceToDestiny <= destinyNear:
+        if distanceToDestiny < destinyNear and s_e == 1:
             destinyNear = distanceToDestiny
             destinyNearStationID = key
 
 
+    #Obtener el nombre
     actualNearStation = getStation(citibike, actualNearStationID)
     destinyNearStation = getStation(citibike, destinyNearStationID)
 
-    
+    #Usar Dijsktra para conseguir el resto de info
     structureActual = djk.Dijkstra(citibike['connections'], actualNearStationID)
-    tripTime = djk.distTo(structureActual, destinyNearStationID)
-    stationList = djk.pathTo(structureActual, destinyNearStationID)
+    if djk.hasPathTo(structureActual, destinyNearStationID):
+        tripTime = djk.distTo(structureActual, destinyNearStationID)
+        stationStack = djk.pathTo(structureActual, destinyNearStationID)
+    else:
+        return (actualNearStation, destinyNearStation,float('INF'), None)
+
+    #De stack a lista con la informacion pulida
+    stationList = lt.newList(datastructure='ARRAY_LIST')
+    for i in range(st.size(stationStack)):
+        stationD = st.pop(stationStack)
+        vA = getStation(citibike, stationD["vertexA"])[1]; vB = getStation(citibike, stationD["vertexB"])[1]
+        lt.addLast(stationList, (vA, vB))
 
     return actualNearStation, destinyNearStation, tripTime, stationList
 
