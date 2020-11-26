@@ -1,4 +1,3 @@
-from os import stat
 import sys
 import config
 from App import controller
