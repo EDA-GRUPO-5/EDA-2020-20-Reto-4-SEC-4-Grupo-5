@@ -47,11 +47,11 @@ def newCitibike():
                                         size=1000,
                                         comparefunction=compareStations)
 
-    citibike['coords'] = #m.newMap(omaptype='BST',
-                                    #comparefunction=compareroutes)
+    citibike['coords'] = m.newMap(numelements=1000,
+                                comparefunction=compareStations)
     
-    citibike['components'] = om.newMap(omaptype='BST',
-                                    comparefunction=compareroutes)
+    citibike['components'] = m.newMap(numelements=1000,
+                                comparefunction=compareroutes)
  
     return citibike
 
@@ -143,11 +143,12 @@ def addBirthYear(citibike, trip):
     
     entry = citibike['components']
     year = trip['birth year']
-    if not om.contains(entry, int(trip['start station id'])):
-        om.put(entry, int(trip['start station id']), year)
+    
+    if not m.contains(entry, int(trip['start station id'])):
+        m.put(entry, int(trip['start station id']), year)
 
-    if not om.contains(entry, int(trip['end station id'])):
-        om.put(entry, int(trip['end station id']), year)
+    if not m.contains(entry, int(trip['end station id'])):
+        m.put(entry, int(trip['end station id']), year)
     return citibike
 
 def totalConnections(citibike):
