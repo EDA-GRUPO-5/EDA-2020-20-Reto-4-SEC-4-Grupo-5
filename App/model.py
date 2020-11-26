@@ -22,18 +22,16 @@ de creacion y consulta sobre las estructuras de datos.
 #                       API
 # =====================================================
 
-# Funciones para agregar informacion al grafo
-
+#Funciones para agregar informacion al grafo
 
 def newCitibike():
 
     citibike = {
                'stations': None,
-               'connections': None,
                'idName_stations': None,
+               'connections': None,
                'components': None,
-               'coords': None#,
-               #'triptime': None
+               'coords': None
                }
     
     citibike['stations'] = m.newMap(numelements=1000,
@@ -50,10 +48,11 @@ def newCitibike():
 
     citibike['coords'] = om.newMap(omaptype='BST',
                                     comparefunction=compareroutes)
-
     
+    citibike['components'] = om.newMap(omaptype='BST',
+                                    comparefunction=compareroutes)
+ 
     return citibike
-
 
 def addStationRoute(citibike, trip):
     start = trip['start station id']
@@ -63,15 +62,16 @@ def addStationRoute(citibike, trip):
     addStation(citibike, start); addStation(citibike, end)
     addRoute(citibike, start, end, duration)
 
-    #addTime(citibike, trip)
-
     #Req 3
     addStationName(citibike, trip)
 
     #Req 6
     addStationCoords(citibike, trip)
+    
+    #Birth Year
+    addBirthYear(citibike, trip)
+    
     return citibike
-
 
 # ==============================
 # Funciones de Load
@@ -119,7 +119,6 @@ def addStationName(citibike, station):
         m.put(citibike['name_IDstations'], stationStart, station['start station name'])
     
     return citibike
-    
 
 def addStationCoords(citibike, trip):
     """
@@ -139,6 +138,16 @@ def addStationCoords(citibike, trip):
 
     return citibike
 
+def addBirthYear(citibike, trip):
+    
+    entry = citibike['components']
+    year = trip['birth year']
+    if not om.contains(entry, int(trip['start station id'])):
+        om.put(entry, int(trip['start station id']), year)
+
+    if not om.contains(entry, int(trip['end station id'])):
+        om.put(entry, int(trip['end station id']), year)
+    return citibike
 
 def totalConnections(citibike):
     """
@@ -168,7 +177,6 @@ def compareStations(station, keyvaluestation):
     else:
         return -1
 
-
 def compareroutes(route1, route2):
     """
     Compara dos rutas
@@ -183,7 +191,6 @@ def compareroutes(route1, route2):
 # ==============================
 # Funciones de Requerimientos
 # ==============================
-
 
 def criticStations(citibike):
     """
@@ -202,7 +209,6 @@ def criticStations(citibike):
     ltKeys = gr.edges(citibike['connections'])
     for arc in range(1, lt.size(ltKeys)+1):
         lt.addLast(tempLT, lt.getElement(ltKeys, arc)['count'])
-
 
     ms.mergesort(tempLT, greatequal)
 
@@ -240,26 +246,22 @@ def rutaPorResistencia(citibike, tiempoMax, idEstacionInicial):
     Rutas turisticas por resistencia
     Req 4
     """
-    ltEdges = gr.edges(citibike['connections']) #Vertices - Peso arcos
+    ltEdges = gr.edges(citibike['connections']) #Retornar lista con todos los arcos del arco (Vertices - Peso Arco)
     for i in range(1, lt.size(ltEdges)+1): 
         station = lt.getElement(ltEdges, i) #Estacion final - Estacion inicial (id) -> str
         if str(idEstacionInicial) == station['vertexA']: #Identificar los que tienen el mismo idEstacionInicial
             duration = station['weight']/60 #Duracion (tripduration) en minutos
-            duration = round(duration,2)
-            if duration <= tiempoMax:
-                rutasLista = lt.newList(datastructure='ARRAY_LIST')
-                lt.addFirst(rutasLista, station['vertexA'])
-                lt.addLast(rutasLista, station['vertexB'])
-                lt.addLast(rutasLista, duration)
-                print (rutasLista['elements'])
+            duration = round(duration, 2)
+            listaRutas = lt.newList(datastructure='ARRAY_LIST')
+            if duration <= tiempoMax: 
+                lt.addFirst(listaRutas, (station['vertexA'], station['vertexB'], duration))
+                print (listaRutas['elements'])
                 
-
 def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longitudDestino):
     """
     Estacion mas cercana a la posicion actual, Estacion mas cercana al destino, (Menor) Tiempo estimado, Lista de estaciones para llegar al destino
     """
     actualNearStationID = destinyNearStationID = None
-
 
     coords = citibike['coords']
     actualNear = destinyNear = float('INF')
