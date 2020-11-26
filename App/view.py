@@ -97,7 +97,10 @@ def optionSix():
         else:
             var = False
     listaRutas = controller.rutaPorResistencia(citibike, tiempoMax, idEstacionInicial)
-    print('Rutas turisticas desde la estacion', idEstacionInicial, 'con', tiempoMax, 'minutos: \n', listaRutas)
+    if listaRutas == []:
+        print('\nNO HAY RUTAS CON UN TIEMPO MENOR O IGUAL A', tiempoMax,'\n')
+    else:
+        print('\nRUTAS TURISTICAS DESDE LA ESTACION', idEstacionInicial, 'CON', tiempoMax, 'MINUTOS\n',listaRutas,'\n')
 
 def optionSeven():
     """
