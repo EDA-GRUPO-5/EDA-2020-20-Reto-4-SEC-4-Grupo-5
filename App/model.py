@@ -9,6 +9,7 @@ from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
 
 from DISClib.Algorithms.Sorting import mergesort as ms
+from DISClib.ADT import orderedmap as om
 from DISClib.ADT import stack as st
 from math import cos, asin, sqrt, pi
 assert config
@@ -46,8 +47,8 @@ def newCitibike():
                                         size=1000,
                                         comparefunction=compareStations)
 
-    citibike['coords'] = om.newMap(omaptype='BST',
-                                    comparefunction=compareroutes)
+    citibike['coords'] = #m.newMap(omaptype='BST',
+                                    #comparefunction=compareroutes)
     
     citibike['components'] = om.newMap(omaptype='BST',
                                     comparefunction=compareroutes)
