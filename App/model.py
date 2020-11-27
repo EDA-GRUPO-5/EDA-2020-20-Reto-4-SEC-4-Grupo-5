@@ -35,6 +35,7 @@ from DISClib.Utils import error as error
 
 from DISClib.Algorithms.Sorting import mergesort as ms
 from DISClib.ADT import stack as st
+from DISClib.ADT import orderedmap as om
 from math import cos, asin, sqrt, pi
 assert config
 
@@ -74,8 +75,8 @@ def newCitibike():
     citibike['coords'] = m.newMap(numelements=1000,
                                 comparefunction=compareStations)
     
-    citibike['components'] = m.newMap(numelements=1000,
-                                comparefunction=compareroutes)
+    citibike['components'] = om.newMap(omaptype='BST',
+                                    comparefunction=compareroutes)
  
     return citibike
 
@@ -157,15 +158,18 @@ def addStationCoords(citibike, trip):
     return citibike
 
 def addBirthYear(citibike, trip):
-    
+    """
+    Para los REQs {}
+    """
     entry = citibike['components']
     year = trip['birth year']
 
-    if not m.contains(entry, int(trip['start station id'])):
-        m.put(entry, int(trip['start station id']), year)
+    if not om.contains(entry, int(trip['start station id'])):
+        om.put(entry, int(trip['start station id']), year)
 
-    if not m.contains(entry, int(trip['end station id'])):
-        m.put(entry, int(trip['end station id']), year)
+    if not om.contains(entry, int(trip['end station id'])):
+        om.put(entry, int(trip['end station id']), year)
+
     return citibike
 
 def totalConnections(citibike):
