@@ -71,6 +71,10 @@ def addStationRoute(citibike, trip):
 
     #Req 6
     addStationCoords(citibike, trip)
+    
+    #Birth Year
+    addBirthYear(citibike, trip)
+    
     return citibike
 
 # ==============================
