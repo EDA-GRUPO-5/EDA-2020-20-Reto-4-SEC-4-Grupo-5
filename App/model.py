@@ -1,28 +1,3 @@
-"""
- * Copyright 2020, Departamento de sistemas y Computación
- * Universidad de Los Andes
- *
- *
- * Desarrolado para el curso ISIS1225 - Estructuras de Datos y Algoritmos
- *
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * Contribución de:
- *
- * Dario Correal
- *
- """
 from os import cpu_count
 import config
 from DISClib.ADT.graph import gr
@@ -48,14 +23,14 @@ de creacion y consulta sobre las estructuras de datos.
 #                       API
 # =====================================================
 
-#Funciones para agregar informacion al grafo
+# Funciones para agregar informacion al grafo
 
 def newCitibike():
 
     citibike = {
                'stations': None,
-               'idName_stations': None,
                'connections': None,
+               'idName_stations': None,
                'components': None,
                'coords': None
                }
@@ -85,29 +60,41 @@ def addStationRoute(citibike, trip):
     end = trip['end station id']
     duration = float(trip['tripduration'])
 
-    addStation(citibike, start); addStation(citibike, end)
+    addStationToGraph(citibike, start)
+    addStationToGraph(citibike, end)
     addRoute(citibike, start, end, duration)
+
+    addStationToMap(citibike, trip)
 
     #Req 3
     addStationName(citibike, trip)
 
     #Req 6
     addStationCoords(citibike, trip)
-    
-    #Birth Year
-    addBirthYear(citibike, trip)
-    
     return citibike
 
 # ==============================
 # Funciones de Load
 # ==============================
 
-def addStation(citibike, station):
+def addStationToGraph(citibike, station):
 
     if not gr.containsVertex(citibike['connections'], station):
         gr.insertVertex(citibike['connections'], station)
 
+    return citibike
+
+def addStationToMap(citibike, trip):
+    entry = m.get(citibike['stations'], trip['end station id'])
+    if entry is None:
+        lstroutes = lt.newList(cmpfunction=compareroutes)
+        lt.addLast(lstroutes, trip['start station id'])
+        m.put(citibike['stations'], trip['end station id'], lstroutes)
+    else:
+        lstroutes = entry['value']
+        info = trip['start station id']
+        if not lt.isPresent(lstroutes, info):
+            lt.addLast(lstroutes, info)
     return citibike
 
 def addRoute(citibike, start, end, duration):
@@ -119,6 +106,7 @@ def addRoute(citibike, start, end, duration):
 
     else:
         gr.addEdgeCount(citibike['connections'], edge)
+        #gr.promediateWeight(citibike['connections'], edge)
 
 def addStationName(citibike, station):
     """
@@ -138,7 +126,7 @@ def addStationName(citibike, station):
         m.put(citibike['name_IDstations'], stationStart, station['start station name'])
     
     return citibike
-
+    
 def addStationCoords(citibike, trip):
     """
     Para el req 6
@@ -218,7 +206,6 @@ def compareroutes(route1, route2):
 def criticStations(citibike):
     """
     Top 3 Llegada, Top 3 Salida y Top 3 menos usadas
-    Req 3
     """
     #Listas respuesta
     topLlegada = lt.newList(datastructure='ARRAY_LIST', cmpfunction=compareroutes)
@@ -236,7 +223,7 @@ def criticStations(citibike):
 
     ms.mergesort(tempLT, greatequal)
 
-    for i in range(1,4):
+    for i in range(1,10):
         lt.addLast(top3LS, lt.getElement(tempLT, i))
     for i in range(3):
         lt.addLast(inTop3, lt.getElement(tempLT, lt.size(tempLT)-i))
@@ -245,14 +232,16 @@ def criticStations(citibike):
     while vxl <= lt.size(tempLT) and lt.size(topLlegada) <= 3:
         if lt.isPresent(top3LS, lt.getElement(ltKeys, vxl)['count']):
             vxA = getStation(citibike, lt.getElement(ltKeys, vxl)['vertexA'])[1]
-            lt.addLast(topLlegada, vxA)
+            if not lt.isPresent(topLlegada, vxA):
+                lt.addLast(topLlegada, vxA)
         vxl +=1
 
     vxs = 1
     while vxs <= lt.size(tempLT) and lt.size(topSalida) <= 3:
         if lt.isPresent(top3LS, lt.getElement(ltKeys, vxs)['count']):
             vxB = getStation(citibike, lt.getElement(ltKeys, vxs)['vertexB'])[1]
-            lt.addLast(topSalida, vxB)
+            if not lt.isPresent(topLlegada, vxB):
+                lt.addLast(topSalida, vxB)
         vxs +=1
 
     vxin = 1
@@ -264,7 +253,7 @@ def criticStations(citibike):
         vxin +=1
 
     return topLlegada, topSalida, intopUsadas
-
+   
 def rutaPorResistencia(citibike, tiempoMax, idEstacionInicial):
     """
     Rutas turisticas por resistencia
@@ -280,11 +269,10 @@ def rutaPorResistencia(citibike, tiempoMax, idEstacionInicial):
             if duration <= tiempoMax:
                 lt.addLast(rutas, (station['vertexA'], station['vertexB'], duration))
     return rutas['elements']
-                
+
 def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longitudDestino):
     """
     Estacion mas cercana a la posicion actual, Estacion mas cercana al destino, (Menor) Tiempo estimado, Lista de estaciones para llegar al destino
-    Req 6
     """
     actualNearStationID = destinyNearStationID = None
 
@@ -343,7 +331,6 @@ def ageStations(citibike, team):
 #=-=-=-=-=-=-=-=-=-=-=-=
 #Funciones usadas
 #=-=-=-=-=-=-=-=-=-=-=-=
-
 def lessequal(k1,k2=None):
     if k2 == None:
         return True
@@ -363,7 +350,7 @@ def getStation(citibike, idStation):
     return None, None
 
 #Harvesine Formula
-#Nota: tarda menos que importar harvesine (por 0.002 s)
+#Nota: tarda menos que importar harvesine (por 0.02 s)
 def distance(lat1, lon1, lat2, lon2):
     p = pi/180
     a = 0.5 - cos((lat2-lat1)*p)/2 + cos(lat1*p)*cos(lat2*p) * (1-cos((lon2-lon1)*p)) / 2
