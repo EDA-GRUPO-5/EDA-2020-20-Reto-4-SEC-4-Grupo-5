@@ -54,9 +54,9 @@ def optionThree():
     """
     Req 1
     """
-    station1 = input("Ingrese id de la estación 1: ") 
-    station2 = input("Ingrese id de la estación 2: ")
-    print('El número de componentes conectados es: ' +
+    station1 = input("\nIngrese ID de la estación 1: ") 
+    station2 = input("\nIngrese ID de la estación 2: ")
+    print('\nEl número de componentes conectados es: ' +
           str(controller.numSCC(citibike)))
     sameSCC = controller.sameSCC(citibike, station1, station2)
     if sameSCC == True:
