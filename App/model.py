@@ -207,6 +207,35 @@ def compareroutes(route1, route2):
 # Funciones de Requerimientos
 # ==============================
 
+def circularRoutes(citibike, availableTime1, availableTime2, initialStation):
+    ltEdges = gr.edges(citibike['connections'])
+    numRutas = 0
+    ltCircularRoutes = lt.newList(datastructure='ARRAY_LIST')
+    
+    
+    for i in range(1, lt.size(ltEdges)+1): 
+        station = lt.getElement(ltEdges, i)
+        if str(initialStation) == station['vertexA']:
+            finalStation = station['vertexB']
+            try:
+                arcoExiste = gr.getEdge(citibike['connections'], finalStation, initialStation)
+                weightFinalStation = arcoExiste['weight']
+                duration = station['weight'] + weightFinalStation
+                if duration+20 >= availableTime1 and duration+20 <= availableTime2:
+                    numRutas += 1
+                    nameStartStation = getStation(citibike, initialStation)[1]
+                    nameEndStation = getStation(citibike, finalStation)[1]
+                    lt.addLast(ltCircularRoutes, (nameStartStation, nameEndStation, duration))
+            except:
+                pass   
+    
+    print("\nEl número de rutas circulares es " + str(numRutas) + " y estos son los datos: ")
+
+    for i in range(1, lt.size(ltCircularRoutes)+1):
+        print("\nNombre  de estación inicial: " + str(lt.getElement(ltCircularRoutes, i)[0]))
+        print("\nNombre de estación final: " + str(lt.getElement(ltCircularRoutes, i)[1]))
+
+
 def criticStations(citibike):
     """
     Top 3 Llegada, Top 3 Salida y Top 3 menos usadas
