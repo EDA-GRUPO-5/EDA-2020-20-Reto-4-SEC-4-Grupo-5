@@ -89,6 +89,13 @@ def rutaPorResistencia(citibike, tiempoMax, idEstacionInicial):
     """
     return model.rutaPorResistencia(citibike, tiempoMax, idEstacionInicial)
 
+def recomendadorPorAños(citibike, edad1, edad2):
+    """
+    Recomendador de Rutas por rango de edad
+    Req 5
+    """
+    return model.recomendadorPorAños(citibike, edad1, edad2)
+
 def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longitudDestino):
     """
     Estacion mas cercana a la posicion actual, Estacion mas cercana al destino, (Menor) Tiempo estimado, Lista de estaciones para llegar al destino\n
