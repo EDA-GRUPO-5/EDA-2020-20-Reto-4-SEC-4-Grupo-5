@@ -70,7 +70,11 @@ def optionFour():
     """
     Req 2
     """    
-    pass
+    initialStation = input("\nIngrese el ID de la estación inicial: ")
+    print("\nAhora ingrese su tiempo disponible en minutos: ")
+    availableTime1 = int(input("\nEntre: "))
+    availableTime2 = int(input("\nHasta: "))
+    controller.circularRoutes(citibike, availableTime1, availableTime2, initialStation)
 
 def optionFive():
     """
@@ -178,39 +182,39 @@ while True:
 
     elif int(inputs[0]) == 2:
         executiontime = timeit.timeit(optionTwo, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        print("\nTiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 3:
         executiontime = timeit.timeit(optionThree, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        print("\nTiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 4:
         executiontime = timeit.timeit(optionFour, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        print("\nTiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 5:
         executiontime = timeit.timeit(optionFive, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        print("\nTiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 6:
         executiontime = timeit.timeit(optionSix, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        print("\nTiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 7:
         executiontime = timeit.timeit(optionSeven, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        print("\nTiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 8:
         executiontime = timeit.timeit(optionEight, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        print("\nTiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 9:
         executiontime = timeit.timeit(optionNine, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        print("\nTiempo de ejecución: " + str(executiontime))
 
     elif int(inputs) == 10:
         executiontime = timeit.timeit(optionTen, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        print("\nTiempo de ejecución: " + str(executiontime))
     
     else:
         sys.exit(0)
