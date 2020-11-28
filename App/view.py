@@ -126,7 +126,6 @@ def optionSeven():
         print('\nNo hay rutas en este rango de edad.\n')
     else:
         print('\nEstacion Inicial - Año \n', recomendadorRutas)
-        print('Camino Corto \n') #FALTAAAA
 
 def optionEight():
     """
