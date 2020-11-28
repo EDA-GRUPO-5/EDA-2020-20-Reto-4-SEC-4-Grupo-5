@@ -207,6 +207,16 @@ def compareroutes(route1, route2):
 # Funciones de Requerimientos
 # ==============================
 
+def numSCC(citibike):
+
+    citibike['components'] = scc.KosarajuSCC(citibike['connections'])
+    return scc.connectedComponents(citibike['components'])
+
+
+def sameSCC(citibike, satation1, station2):
+    return scc.stronglyConnected(citibike, satation1, station2)
+
+
 def circularRoutes(citibike, availableTime1, availableTime2, initialStation):
     ltEdges = gr.edges(citibike['connections'])
     numRutas = 0
