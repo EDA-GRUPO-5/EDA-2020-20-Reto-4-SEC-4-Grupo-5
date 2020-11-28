@@ -226,7 +226,6 @@ def circularRoutes(citibike, availableTime1, availableTime2, initialStation):
     numRutas = 0
     ltCircularRoutes = lt.newList(datastructure='ARRAY_LIST')
     
-    
     for i in range(1, lt.size(ltEdges)+1): 
         station = lt.getElement(ltEdges, i)
         if str(initialStation) == station['vertexA']:
