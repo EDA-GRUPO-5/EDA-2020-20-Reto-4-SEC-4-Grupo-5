@@ -336,8 +336,8 @@ def recomendadorPorAños(citibike, edad1, edad2):
         valores = int(i[1])
         today = date.today() #Fecha Actual
         anioActual = today.year #Año Actual
-        anio = añoActual - valores #Diferencia de años -> años
-        if año in range(edad1, edad2 + 1):
+        anio = anioActual - valores #Diferencia de años -> años
+        if anio in range(edad1, edad2 + 1):
             lt.addLast(resultado, i)
     return resultado['elements']
 
