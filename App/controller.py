@@ -52,6 +52,10 @@ def totalConnections(citibike):
     """
     return model.totalConnections(citibike)
 
+# ___________________________________________________
+#  Funciones para Reqs
+# ___________________________________________________
+
 def numSCC(citibike):
     """
     Numero de componentes fuertemente conectados
@@ -63,10 +67,6 @@ def sameSCC(citibike, station1, station2):
     Numero de componentes fuertemente conectados
     """
     return model.sameSCC(citibike, station1, station2)
-
-# ___________________________________________________
-#  Funciones para Reqs
-# ___________________________________________________
 
 def circularRoutes(citibike, availableTime1, availableTime2, initialStation):
     """
