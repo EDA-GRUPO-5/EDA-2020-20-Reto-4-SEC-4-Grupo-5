@@ -246,7 +246,7 @@ def circularRoutes(citibike, availableTime1, availableTime2, initialStation):
     print("\nEl número de rutas circulares es " + str(numRutas) + " y estos son los datos: ")
 
     for i in range(1, lt.size(ltCircularRoutes)+1):
-        print("\nNombre  de estación inicial: " + str(lt.getElement(ltCircularRoutes, i)[0]))
+        print("\nNombre de estación inicial: " + str(lt.getElement(ltCircularRoutes, i)[0]))
         print("\nNombre de estación final: " + str(lt.getElement(ltCircularRoutes, i)[1]))
         print("\nDuración estimada: " + str(lt.getElement(ltCircularRoutes, i)[2]) + " minutos")
 
