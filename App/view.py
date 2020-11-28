@@ -110,7 +110,23 @@ def optionSeven():
     """
     Req 5
     """    
-    pass
+    print('\nRANGOS DE EDAD\n', '<0-10> , <11-20> , <21-30> , <31-40> , <41-50> , <51-60> , <60+>\n')
+    var = True
+    while var:
+        edad1 = input('\nIngrese el PRIMER numero del rango de edad del turista:')
+        edad2 = input('Ingrese el SEGUNDO numero del rango de edad del turista:')
+        try:
+            edad1, edad2 = int(edad1), int(edad2)
+        except ValueError:
+            print('\nIngrese valores validos')
+        else:
+            var = False
+    recomendadorRutas = controller.recomendadorPorAños(citibike, edad1, edad2)
+    if recomendadorRutas == []:
+        print('\nNo hay rutas en este rango de edad.\n')
+    else:
+        print('\nEstacion Inicial - Año \n', recomendadorRutas)
+        print('Camino Corto \n') #FALTAAAA
 
 def optionEight():
     """
