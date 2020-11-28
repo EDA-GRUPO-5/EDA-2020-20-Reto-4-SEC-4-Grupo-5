@@ -12,6 +12,8 @@ from DISClib.Algorithms.Sorting import mergesort as ms
 from DISClib.ADT import stack as st
 from DISClib.ADT import orderedmap as om
 from math import cos, asin, sqrt, pi
+from datetime import date 
+
 assert config
 
 """
@@ -212,10 +214,8 @@ def numSCC(citibike):
     citibike['components'] = scc.KosarajuSCC(citibike['connections'])
     return scc.connectedComponents(citibike['components'])
 
-
 def sameSCC(citibike, satation1, station2):
     return scc.stronglyConnected(citibike, satation1, station2)
-
 
 def circularRoutes(citibike, availableTime1, availableTime2, initialStation):
     """
@@ -249,10 +249,10 @@ def circularRoutes(citibike, availableTime1, availableTime2, initialStation):
         print("\nNombre de estación final: " + str(lt.getElement(ltCircularRoutes, i)[1]))
         print("\nDuración estimada: " + str(lt.getElement(ltCircularRoutes, i)[2]) + " minutos")
 
-
 def criticStations(citibike):
     """
     Top 3 Llegada, Top 3 Salida y Top 3 menos usadas
+    Req 3
     """
     #Listas respuesta
     topLlegada = lt.newList(datastructure='ARRAY_LIST', cmpfunction=compareroutes)
@@ -318,6 +318,28 @@ def rutaPorResistencia(citibike, tiempoMax, idEstacionInicial):
                 lt.addLast(rutas, (station['vertexA'], station['vertexB'], duration))
     return rutas['elements']
 
+def recomendadorPorAños(citibike, edad1, edad2):
+    """
+    Recomendador de rutas por rango de edad
+    req 5
+    """
+    year = citibike['components']
+    valueList = om.valueSet(year)
+    keyList = om.keySet(year)
+    lista = lt.newList(datastructure='ARRAY_LIST')
+    resultado = lt.newList(datastructure='ARRAY_LIST')
+    for i in range(om.size(year)):
+        value = lt.getElement(valueList, i) #Value -> Año
+        key = lt.getElement(keyList, i)
+        lt.addLast(lista, (key, value))
+    for i in lista['elements']:
+        valores = int(i[1])
+        today = date.today() #Fecha Actual
+        anioActual = today.year #Año Actual
+        anio = añoActual - valores #Diferencia de años -> años
+        if año in range(edad1, edad2 + 1):
+            lt.addLast(resultado, i)
+    return resultado['elements']
 
 def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longitudDestino):
     """
