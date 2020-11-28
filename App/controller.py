@@ -68,6 +68,13 @@ def sameSCC(citibike, station1, station2):
 #  Funciones para Reqs
 # ___________________________________________________
 
+def circularRoutes(citibike, availableTime1, availableTime2, initialStation):
+    """
+    Rutas circulares
+    Req 2
+    """
+    model.circularRoutes(citibike, availableTime1, availableTime2, initialStation)
+
 def criticStations(citibike):
     """
     Top 3 Llegada, Top 3 Salida y Top 3 menos usadas\n
