@@ -218,6 +218,10 @@ def sameSCC(citibike, satation1, station2):
 
 
 def circularRoutes(citibike, availableTime1, availableTime2, initialStation):
+    """
+    Rutas circulares
+    Req 2
+    """
     ltEdges = gr.edges(citibike['connections'])
     numRutas = 0
     ltCircularRoutes = lt.newList(datastructure='ARRAY_LIST')
@@ -244,6 +248,7 @@ def circularRoutes(citibike, availableTime1, availableTime2, initialStation):
     for i in range(1, lt.size(ltCircularRoutes)+1):
         print("\nNombre  de estación inicial: " + str(lt.getElement(ltCircularRoutes, i)[0]))
         print("\nNombre de estación final: " + str(lt.getElement(ltCircularRoutes, i)[1]))
+        print("\nDuración estimada: " + str(lt.getElement(ltCircularRoutes, i)[2]) + " minutos")
 
 
 def criticStations(citibike):
@@ -296,7 +301,8 @@ def criticStations(citibike):
         vxin +=1
 
     return topLlegada, topSalida, intopUsadas
-   
+
+
 def rutaPorResistencia(citibike, tiempoMax, idEstacionInicial):
     """
     Rutas turisticas por resistencia
@@ -312,6 +318,7 @@ def rutaPorResistencia(citibike, tiempoMax, idEstacionInicial):
             if duration <= tiempoMax:
                 lt.addLast(rutas, (station['vertexA'], station['vertexB'], duration))
     return rutas['elements']
+
 
 def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longitudDestino):
     """
@@ -361,6 +368,7 @@ def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longi
         lt.addLast(stationList, (vA, vB))
 
     return actualNearStation, destinyNearStation, tripTime, stationList
+
 
 def ageStations(citibike, team):
     """
