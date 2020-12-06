@@ -31,16 +31,9 @@ def loadFile(citibike, tripfile):
     tripfile = cf.data_dir + tripfile
     input_file = csv.DictReader(open(tripfile, encoding="utf-8"),
                                 delimiter=",")
-    laststation = None
     for station in input_file:
         model.addStationRoute(citibike, station)
-        #if laststation is not None:
-            #samestation = laststation['start station id'] == station['start station id']
-            #samedirection = laststation['end station id'] == station['end station id']
-            #if samestation and samedirection:
-                #model.addStopConnection(citibike, laststation, station)
-        #laststation = station
-    #model.addRouteStation(citibike)
+    
     return citibike
 
 # ___________________________________________________
@@ -59,6 +52,10 @@ def totalConnections(citibike):
     """
     return model.totalConnections(citibike)
 
+# ___________________________________________________
+#  Funciones para Reqs
+# ___________________________________________________
+
 def numSCC(citibike):
     """
     Numero de componentes fuertemente conectados
@@ -71,9 +68,12 @@ def sameSCC(citibike, station1, station2):
     """
     return model.sameSCC(citibike, station1, station2)
 
-# ___________________________________________________
-#  Funciones para Reqs
-# ___________________________________________________
+def circularRoutes(citibike, availableTime1, availableTime2, initialStation):
+    """
+    Rutas circulares
+    Req 2
+    """
+    model.circularRoutes(citibike, availableTime1, availableTime2, initialStation)
 
 def criticStations(citibike):
     """
@@ -89,16 +89,16 @@ def rutaPorResistencia(citibike, tiempoMax, idEstacionInicial):
     """
     return model.rutaPorResistencia(citibike, tiempoMax, idEstacionInicial)
 
+def recomendadorPorAños(citibike, edad1, edad2):
+    """
+    Recomendador de Rutas por rango de edad
+    Req 5
+    """
+    return model.recomendadorPorAños(citibike, edad1, edad2)
+
 def turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longitudDestino):
     """
     Estacion mas cercana a la posicion actual, Estacion mas cercana al destino, (Menor) Tiempo estimado, Lista de estaciones para llegar al destino\n
     Req 6
     """
     return model.turistInteres(citibike, latitudActual, longitudActual, latitudDestino, longitudDestino)
-
-def ageStations(citibike, team):
-    """
-    Lista de tuplas con las parejas Entrada, Salida y la cantidad de viajes\n
-    Req 7
-    """
-    return model.ageStations(citibike, team)
